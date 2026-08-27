@@ -1,0 +1,27 @@
+{
+  "short_name": "scroll_lingo",
+  "name": "scroll_lingo - 沉浸式刷帖学语言",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait",
+  "description": "伪装成社交媒体信息流的 AI 驱动沉浸式日语学习 H5/PWA 应用。"
+}

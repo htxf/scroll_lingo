@@ -1,0 +1,38 @@
+name: Daily Corpus Generation & Cloudflare Auto-Deploy
+
+on:
+  schedule:
+    # Runs daily at 03:00 UTC (11:00 AM JST / 10:00 AM CST)
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab anytime
+
+jobs:
+  build-corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Daily Corpus Generator Script
+        run: npm run generate:daily
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      - name: Run Vitest Tests
+        run: npm test
+
+      - name: Commit and push new daily posts
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore(corpus): auto-generate daily Japanese posts [skip ci]'
+          file_pattern: 'src/db/seedPosts.ts'
