@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 /**
  * Pure helper to sanitize speech text by stripping out emojis, kaomoji, and non-speech symbols
@@ -18,48 +18,12 @@ export function useSpeech() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const playSeqRef = useRef<number>(0);
-  const japaneseVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
-
-  // Pre-fetch and lock the Japanese voice on load & voice changes
-  useEffect(() => {
-    if (!('speechSynthesis' in window)) return;
-
-    const findJapaneseVoice = () => {
-      const voices = window.speechSynthesis.getVoices();
-      if (!voices || voices.length === 0) return;
-
-      const jaVoice = voices.find(
-        (v) =>
-          v.lang.toLowerCase() === 'ja-jp' ||
-          v.lang.toLowerCase() === 'ja_jp' ||
-          v.lang.toLowerCase().startsWith('ja') ||
-          v.name.toLowerCase().includes('japanese') ||
-          v.name.includes('Kyoko') ||
-          v.name.includes('Otoya') ||
-          v.name.includes('Nanami') ||
-          v.name.includes('日本語')
-      );
-
-      if (jaVoice) {
-        japaneseVoiceRef.current = jaVoice;
-      }
-    };
-
-    findJapaneseVoice();
-    window.speechSynthesis.onvoiceschanged = findJapaneseVoice;
-
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = null;
-      }
-    };
-  }, []);
 
   const stop = useCallback(() => {
-    // Bump sequence to invalidate any pending playback
+    // Increment sequence to invalidate any pending play callbacks
     playSeqRef.current += 1;
 
-    // 1. Instantly pause, clear and destroy Audio element
+    // 1. Force abort and destroy current Audio element
     if (currentAudioRef.current) {
       try {
         currentAudioRef.current.pause();
@@ -71,7 +35,7 @@ export function useSpeech() {
       currentAudioRef.current = null;
     }
 
-    // 2. Instantly cancel Web Speech Synthesis
+    // 2. Force cancel SpeechSynthesis
     if ('speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
@@ -84,73 +48,30 @@ export function useSpeech() {
   }, []);
 
   const speak = useCallback(
-    (text: string, id: string = text) => {
-      // Step 1: Force stop everything immediately to guarantee 0 echo and 0 double-play
+    (text: string, id: string = text, customAudioUrl?: string) => {
+      // Step 1: Immediately stop any currently playing audio (strictly 0 echo, 0 double play)
       stop();
 
       const cleanText = sanitizeSpeechText(text);
-      if (!cleanText) return;
+      if (!cleanText && !customAudioUrl) return;
 
       const thisSeq = ++playSeqRef.current;
       setPlayingId(id);
 
-      // Determine if text is a full sentence or single token/kana
-      const isSentence = cleanText.length > 6 || /[。！？、\s]/.test(cleanText);
-
-      // =========================================================================
-      // CASE 1: Full Sentences -> Direct Local Web Speech Synthesis (0 network, 0ms, 100% pure kana)
-      // =========================================================================
-      if (isSentence) {
-        if (!('speechSynthesis' in window)) {
-          setPlayingId(null);
-          return;
+      // Determine Audio URL:
+      // 1. If explicit customAudioUrl is provided (Plan 1), use it directly
+      // 2. If it's a full sentence / has punctuation, use high-speed authentic Japanese sentence MP3 stream
+      // 3. If it's a short token / Kana, use Youdao Japanese dictionary MP3
+      let audioUrl = customAudioUrl;
+      if (!audioUrl) {
+        const isSentence = cleanText.length > 5 || /[。！？、\s]/.test(cleanText);
+        if (isSentence) {
+          audioUrl = `https://fanyi.baidu.com/gettts?lan=jp&text=${encodeURIComponent(cleanText)}&spd=3&source=web`;
+        } else {
+          audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=jap`;
         }
-
-        try {
-          window.speechSynthesis.cancel();
-          if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
-          }
-
-          const utterance = new SpeechSynthesisUtterance(cleanText);
-          utterance.lang = 'ja-JP';
-          utterance.rate = 0.9;
-
-          if (japaneseVoiceRef.current) {
-            utterance.voice = japaneseVoiceRef.current;
-          }
-
-          utterance.onstart = () => {
-            if (playSeqRef.current === thisSeq) {
-              setPlayingId(id);
-            }
-          };
-
-          utterance.onend = () => {
-            if (playSeqRef.current === thisSeq) {
-              setPlayingId(null);
-            }
-          };
-
-          utterance.onerror = () => {
-            if (playSeqRef.current === thisSeq) {
-              setPlayingId(null);
-            }
-          };
-
-          window.speechSynthesis.speak(utterance);
-        } catch {
-          if (playSeqRef.current === thisSeq) {
-            setPlayingId(null);
-          }
-        }
-        return;
       }
 
-      // =========================================================================
-      // CASE 2: Single Words / Fifty-Sounds Kana -> High-Speed Native Human Japanese MP3
-      // =========================================================================
-      const audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=jap`;
       const audio = new Audio();
       audio.preload = 'auto';
       audio.src = audioUrl;
@@ -165,29 +86,8 @@ export function useSpeech() {
 
       audio.onerror = () => {
         if (playSeqRef.current === thisSeq) {
-          // If network audio fails, fallback to local Web Speech once (no overlapping)
-          if ('speechSynthesis' in window) {
-            try {
-              window.speechSynthesis.cancel();
-              const utterance = new SpeechSynthesisUtterance(cleanText);
-              utterance.lang = 'ja-JP';
-              utterance.rate = 0.9;
-              if (japaneseVoiceRef.current) {
-                utterance.voice = japaneseVoiceRef.current;
-              }
-              utterance.onend = () => {
-                if (playSeqRef.current === thisSeq) setPlayingId(null);
-              };
-              utterance.onerror = () => {
-                if (playSeqRef.current === thisSeq) setPlayingId(null);
-              };
-              window.speechSynthesis.speak(utterance);
-            } catch {
-              setPlayingId(null);
-            }
-          } else {
-            setPlayingId(null);
-          }
+          setPlayingId(null);
+          currentAudioRef.current = null;
         }
       };
 
@@ -196,6 +96,7 @@ export function useSpeech() {
         playPromise.catch(() => {
           if (playSeqRef.current === thisSeq) {
             setPlayingId(null);
+            currentAudioRef.current = null;
           }
         });
       }

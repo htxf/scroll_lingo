@@ -51,6 +51,7 @@ export interface Post {
   tokens: Token[];
   translationZh: string;
   imageUrl?: string;
+  audioUrl?: string; // Plan 1: Pre-computed / Static Authentic Japanese MP3 Audio URL
   category: string;
   level: JLPTLevel;
   likesCount: number;

@@ -389,7 +389,7 @@ export function App() {
               post={post}
               userState={userState}
               onTokenClick={(token) => setSelectedToken(token)}
-              onSpeakText={(text) => speak(text, post.id)}
+              onSpeakText={(text, audioUrl) => speak(text, post.id, audioUrl)}
               onStopText={stop}
               isPlayingAudio={playingId === post.id}
               onBookmarkPost={handleBookmarkPost}

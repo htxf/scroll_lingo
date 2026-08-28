@@ -3,13 +3,13 @@ import { Post, Token, UserKnowledgeState } from '../../types';
 import { PersonaHeader } from './PersonaHeader';
 import { ActionButtons } from './ActionButtons';
 import { RubyTokenText } from '../reader/RubyTokenText';
-import { getPostPhoneticText } from '../../utils/rubyParser';
+import { getPostPhoneticText, getPostAudioUrl } from '../../utils/rubyParser';
 
 interface PostCardProps {
   post: Post;
   userState: UserKnowledgeState;
   onTokenClick: (token: Token) => void;
-  onSpeakText: (text: string) => void;
+  onSpeakText: (text: string, audioUrl?: string) => void;
   onStopText?: () => void;
   isPlayingAudio?: boolean;
   onBookmarkPost?: (post: Post) => void;
@@ -31,9 +31,10 @@ export function PostCard({
     if (isPlayingAudio && onStopText) {
       onStopText();
     } else {
-      // Plan A: Speak using pure Kana reading transliteration, completely eliminating Chinese character mispronunciation
+      // Plan 1: Direct High-Reliability Japanese Audio Stream URL
       const phoneticText = getPostPhoneticText(post);
-      onSpeakText(phoneticText);
+      const audioUrl = getPostAudioUrl(post);
+      onSpeakText(phoneticText, audioUrl);
     }
   };
 

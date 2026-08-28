@@ -72,7 +72,7 @@ describe('PostCard Component', () => {
     expect(screen.getByText('纯享')).not.toBeNull();
   });
 
-  it('should trigger onSpeakText with pure phonetic Kana reading text (Plan A)', () => {
+  it('should trigger onSpeakText with phonetic text and authentic audioUrl (Plan 1)', () => {
     const handleSpeak = vi.fn();
     render(
       <PostCard
@@ -86,6 +86,9 @@ describe('PostCard Component', () => {
     const speakerButton = screen.getByTitle('朗读推文');
     fireEvent.click(speakerButton);
 
-    expect(handleSpeak).toHaveBeenCalledWith('あさのコーヒー。');
+    expect(handleSpeak).toHaveBeenCalledWith(
+      'あさのコーヒー。',
+      expect.stringContaining('https://fanyi.baidu.com/gettts?lan=jp')
+    );
   });
 });
