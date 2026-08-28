@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { db, initializeDatabase, toUserKnowledgeState, UserStateEntity, SavedWordEntity } from './db/database';
 import { Post, Token, UserKnowledgeState } from './types';
 import { PostCard } from './components/feed/PostCard';
@@ -35,7 +35,6 @@ export function App() {
   const [isReviewOnlyMode, setIsReviewOnlyMode] = useState<boolean>(false);
 
   const { speak, stop, playingId } = useSpeech();
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     async function loadApp() {
@@ -64,31 +63,6 @@ export function App() {
     }
     loadApp();
   }, []);
-
-  // Automatic Infinite Scroll
-  useEffect(() => {
-    if (!sentinelRef.current || activeTab !== 'feed') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && posts.length > 0) {
-          setPosts((prev) => {
-            const extra = prev.map((orig, idx) => ({
-              ...orig,
-              id: `post_inf_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
-              createdAt: '刚刚',
-              likesCount: orig.likesCount + Math.floor(Math.random() * 10),
-            }));
-            return [...prev, ...extra];
-          });
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
-  }, [activeTab, posts.length]);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -323,12 +297,14 @@ export function App() {
   const basePosts = n0FilteredPosts.length > 0 ? n0FilteredPosts : posts;
   const srsRankedPosts = rankPostsForInFeedSRS(basePosts, userState, savedWords);
 
-  // Daily Feed Slice
+  // Active Feed Posts Slice
   const activeFeedPosts = isReviewOnlyMode
     ? srsRankedPosts.filter((p) => p.tokens.some((t) => userState.explicitFocusWords.has(t.lemma) || userState.explicitKnownWords.has(t.lemma)))
     : srsRankedPosts.slice(0, dailyPostLimit);
 
-  const hasReachedDailyLimit = !isReviewOnlyMode && srsRankedPosts.length >= dailyPostLimit;
+  // State checks: Finished daily batch vs exhausted entire database
+  const isEntireDatabaseExhausted = !isReviewOnlyMode && activeFeedPosts.length >= srsRankedPosts.length;
+  const hasReachedDailyLimit = !isReviewOnlyMode && !isEntireDatabaseExhausted && activeFeedPosts.length >= dailyPostLimit;
 
   return (
     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', paddingBottom: '80px' }}>
@@ -420,7 +396,7 @@ export function App() {
             />
           ))}
 
-          {/* Daily Goal Completion Milestone Card (Anti-Fatigue & Closure) */}
+          {/* Case 1: Daily Target Reached (Prompt to stop or add 5 more) */}
           {hasReachedDailyLimit && (
             <div
               style={{
@@ -503,18 +479,107 @@ export function App() {
             </div>
           )}
 
-          {/* Automatic Infinite Scroll Sentinel Element (only when in review mode or extra requested) */}
-          {!hasReachedDailyLimit && (
+          {/* Case 2: All Available Posts Exhausted (Clean Closure instead of stuck loading) */}
+          {isEntireDatabaseExhausted && (
             <div
-              ref={sentinelRef}
               style={{
-                padding: '16px',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--border-radius-md)',
+                padding: '24px 20px',
                 textAlign: 'center',
-                color: 'var(--text-secondary)',
-                fontSize: '11px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '12px',
+                marginTop: '8px',
               }}
             >
-              加载中...
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--accent-secondary)' }}>
+                🎉 你已刷完全部推文！
+              </div>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '280px', lineHeight: '1.5' }}>
+                当前阶段语料库已全部浏览完毕。你可以开启生词温故复习，或重置推文流重新刷一轮！
+              </p>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '6px' }}>
+                <button
+                  onClick={() => {
+                    setIsReviewOnlyMode(true);
+                    triggerToast('已切换至温故复习模式');
+                  }}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 'var(--border-radius-full)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    color: 'var(--text-primary)',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                  }}
+                >
+                  开启温故复习
+                </button>
+
+                <button
+                  onClick={() => {
+                    setDailyPostLimit(12);
+                    setIsReviewOnlyMode(false);
+                    triggerToast('已重置推文流，重新开始');
+                  }}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 'var(--border-radius-full)',
+                    border: 'none',
+                    backgroundColor: 'var(--accent-primary)',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                  }}
+                >
+                  重新打乱刷一轮
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Case 3: Review Only Mode Empty State */}
+          {isReviewOnlyMode && activeFeedPosts.length === 0 && (
+            <div
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--border-radius-md)',
+                padding: '24px 20px',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <div style={{ fontSize: '15px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                暂无待复习生词
+              </div>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '280px', lineHeight: '1.5' }}>
+                在推文或词卡中收藏生词后，温故复习模式会自动精选相关推文。
+              </p>
+              <button
+                onClick={() => setIsReviewOnlyMode(false)}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: 'var(--border-radius-full)',
+                  border: 'none',
+                  backgroundColor: 'var(--accent-primary)',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                返回全部推文流
+              </button>
             </div>
           )}
         </section>
