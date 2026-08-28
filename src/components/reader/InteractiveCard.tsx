@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Token, UserKnowledgeState, PitchAccent } from '../../types';
 import { useSpeech } from '../../hooks/useSpeech';
 import { PitchAccentView } from './PitchAccentView';
@@ -18,10 +18,15 @@ export function InteractiveCard({
   onToggleKnown,
   onToggleFocus,
 }: InteractiveCardProps) {
-  const [aiBreakdown, setAiBreakdown] = useState<string | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const { speak, stop, playingId } = useSpeech();
   const isPlaying = Boolean(playingId);
+
+  // Stop audio immediately when token changes or modal unmounts
+  useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, [token?.id, stop]);
 
   if (!token) return null;
 
@@ -40,21 +45,6 @@ export function InteractiveCard({
     return pos;
   };
 
-  const handleAiDeepDive = () => {
-    setIsAiLoading(true);
-    setAiBreakdown(null);
-
-    setTimeout(() => {
-      setAiBreakdown(
-        `【句式与语境解构】\n` +
-        `• 核心词性：${token.pos || '基础词汇'}\n` +
-        `• 标准释义：${token.definitionZh}\n` +
-        `• 日常语境：日本社交平台高频短语，无需死记复杂变形，顺口跟读即可掌握。`
-      );
-      setIsAiLoading(false);
-    }, 300);
-  };
-
   const handleSpeechToggle = () => {
     if (isPlaying) {
       stop();
@@ -63,11 +53,23 @@ export function InteractiveCard({
     }
   };
 
+  const handleCardClose = () => {
+    stop();
+    onClose();
+  };
+
   // Fallback pitch accent if pitchAccent object is not explicitly attached
   const activePitchAccent: PitchAccent = token.pitchAccent || {
     pattern: token.surface.length <= 2 ? 'atamadaka' : 'heiban',
     pitchNotation: token.surface.length <= 2 ? '1' : '0',
   };
+
+  // Dynamically derive AI breakdown for the current token (0ms instant, no stale state)
+  const aiBreakdownText =
+    `【AI 语法解构与语境】\n` +
+    `• 核心词性：${token.pos || '基础词汇'} (${token.level === 'N0' ? 'N0 萌芽' : `JLPT ${token.level}`})\n` +
+    `• 释义延伸：${token.definitionZh || '常用基础表达'}\n` +
+    `• 语感提示：日本日常高频短语，无需死记复杂变形，顺口跟读即可自然掌握。`;
 
   return (
     <div
@@ -87,7 +89,7 @@ export function InteractiveCard({
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}
-      onClick={onClose}
+      onClick={handleCardClose}
     >
       <div
         style={{
@@ -130,7 +132,7 @@ export function InteractiveCard({
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleCardClose}
             style={{
               background: 'var(--bg-tertiary)',
               border: '1px solid var(--border-color)',
@@ -257,50 +259,22 @@ export function InteractiveCard({
           </button>
         </div>
 
-        {/* AI Deep Breakdown Section (100% visible, fully scrollable) */}
+        {/* AI Deep Breakdown Section (Default visible, instantly responsive to current token) */}
         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
-          {!aiBreakdown && !isAiLoading && (
-            <button
-              onClick={handleAiDeepDive}
-              style={{
-                width: '100%',
-                padding: '10px',
-                borderRadius: 'var(--border-radius-sm)',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-primary)',
-                color: 'var(--text-secondary)',
-                fontSize: '12px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              AI 语法解构与拓展
-            </button>
-          )}
-
-          {isAiLoading && (
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center', padding: '8px' }}>
-              正在生成解析...
-            </div>
-          )}
-
-          {aiBreakdown && (
-            <div
-              style={{
-                backgroundColor: 'var(--bg-primary)',
-                border: '1px solid var(--border-color)',
-                padding: '12px 14px',
-                borderRadius: 'var(--border-radius-sm)',
-                fontSize: '12px',
-                whiteSpace: 'pre-wrap',
-                lineHeight: '1.6',
-                color: 'var(--text-primary)',
-              }}
-            >
-              {aiBreakdown}
-            </div>
-          )}
+          <div
+            style={{
+              backgroundColor: 'var(--bg-primary)',
+              border: '1px solid var(--border-color)',
+              padding: '12px 14px',
+              borderRadius: 'var(--border-radius-sm)',
+              fontSize: '12px',
+              whiteSpace: 'pre-wrap',
+              lineHeight: '1.6',
+              color: 'var(--text-primary)',
+            }}
+          >
+            {aiBreakdownText}
+          </div>
         </div>
       </div>
     </div>
