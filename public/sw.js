@@ -1,4 +1,4 @@
-const CACHE_NAME = 'scroll-lingo-v1';
+const CACHE_NAME = 'scroll-lingo-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -6,7 +6,7 @@ const STATIC_ASSETS = [
   '/favicon.svg',
 ];
 
-// Install Event - Pre-cache shell assets
+// Install Event - Pre-cache shell assets & skip waiting immediately
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -16,7 +16,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate Event - Clean old caches
+// Activate Event - Clean old caches & claim clients immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -35,6 +35,9 @@ self.addEventListener('activate', (event) => {
 // Fetch Event - Network First with Cache Fallback for offline scrolling
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  // Never cache API or chrome-extension requests
+  if (event.request.url.startsWith('chrome-extension://')) return;
 
   event.respondWith(
     fetch(event.request)
