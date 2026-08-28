@@ -3,13 +3,12 @@ import { Post, Token, UserKnowledgeState } from '../../types';
 import { PersonaHeader } from './PersonaHeader';
 import { ActionButtons } from './ActionButtons';
 import { RubyTokenText } from '../reader/RubyTokenText';
-import { getPostPhoneticText, getPostAudioUrl } from '../../utils/rubyParser';
 
 interface PostCardProps {
   post: Post;
   userState: UserKnowledgeState;
   onTokenClick: (token: Token) => void;
-  onSpeakText: (text: string, audioUrl?: string) => void;
+  onSpeakPost: (post: Post) => void;
   onStopText?: () => void;
   isPlayingAudio?: boolean;
   onBookmarkPost?: (post: Post) => void;
@@ -19,7 +18,7 @@ export function PostCard({
   post,
   userState,
   onTokenClick,
-  onSpeakText,
+  onSpeakPost,
   onStopText,
   isPlayingAudio = false,
   onBookmarkPost,
@@ -31,10 +30,7 @@ export function PostCard({
     if (isPlayingAudio && onStopText) {
       onStopText();
     } else {
-      // Plan 1: Direct High-Reliability Japanese Audio Stream URL
-      const phoneticText = getPostPhoneticText(post);
-      const audioUrl = getPostAudioUrl(post);
-      onSpeakText(phoneticText, audioUrl);
+      onSpeakPost(post);
     }
   };
 

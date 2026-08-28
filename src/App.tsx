@@ -39,7 +39,7 @@ export function App() {
     setTimeout(() => setToastMessage(null), 2500);
   }, []);
 
-  const { speak, stop, playingId } = useSpeech();
+  const { speakPost, stop, playingId } = useSpeech();
 
   useEffect(() => {
     async function loadApp() {
@@ -389,7 +389,7 @@ export function App() {
               post={post}
               userState={userState}
               onTokenClick={(token) => setSelectedToken(token)}
-              onSpeakText={(text, audioUrl) => speak(text, post.id, audioUrl)}
+              onSpeakPost={speakPost}
               onStopText={stop}
               isPlayingAudio={playingId === post.id}
               onBookmarkPost={handleBookmarkPost}

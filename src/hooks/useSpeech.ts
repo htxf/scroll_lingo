@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { Post } from '../types';
 
 /**
  * Pure helper to sanitize speech text by stripping out emojis, kaomoji, and non-speech symbols
@@ -9,10 +10,8 @@ export function sanitizeSpeechText(text: string): string {
     .replace(/[\u{1F300}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}]/gu, '')
     // Strip Kaomoji in parentheses like ( •̀ ω •́ )✧ or (≧∇≦)
     .replace(/\([^\)]*[\u0370-\u03FF\u0400-\u04FF\u2200-\u22FF\u25A0-\u25FF\u2207\u2200\u03C9\u2207\u2200\u2267\u2266][^\)]*\)/gu, '')
-    // Strip remaining decorative symbols
-    .replace(/[✨🎉💪🔥⚽️☕️🍣( •̀ ω •́ )✧(≧∇≦)]/g, '')
-    .replace(/[。！？\n]/g, ',')
-    .replace(/[,]{2,}/g, ',')
+    // Strip remaining decorative symbols and punctuation
+    .replace(/[✨🎉💪🔥⚽️☕️🍣( •̀ ω •́ )✧(≧∇≦)！。？、\s\n]/g, '')
     .trim();
 }
 
@@ -24,7 +23,6 @@ export function useSpeech() {
   const stop = useCallback(() => {
     playSeqRef.current += 1;
 
-    // 1. Force abort and destroy current Audio element
     if (currentAudioRef.current) {
       try {
         currentAudioRef.current.pause();
@@ -36,7 +34,6 @@ export function useSpeech() {
       currentAudioRef.current = null;
     }
 
-    // 2. Force cancel SpeechSynthesis
     if ('speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
@@ -50,7 +47,6 @@ export function useSpeech() {
 
   const speak = useCallback(
     (text: string, id: string = text, customAudioUrl?: string) => {
-      // Step 1: Immediately stop any currently playing audio (strictly 0 echo)
       stop();
 
       const cleanText = sanitizeSpeechText(text);
@@ -104,5 +100,78 @@ export function useSpeech() {
     [stop]
   );
 
-  return { speak, stop, playingId };
+  const speakPost = useCallback(
+    (post: Post) => {
+      stop();
+
+      const thisSeq = ++playSeqRef.current;
+      setPlayingId(post.id);
+
+      // Case 1: Post has direct explicit static audioUrl
+      if (post.audioUrl) {
+        console.log(`[useSpeech] Playing static post audio:`, post.audioUrl);
+        speak(post.contentJa, post.id, post.audioUrl);
+        return;
+      }
+
+      // Case 2: Multi-token high-reliability 200 OK audio queue
+      const vocalWords = (post.tokens || [])
+        .map((t) => sanitizeSpeechText(t.reading || t.surface))
+        .filter((word) => word.length > 0);
+
+      if (vocalWords.length === 0) {
+        setPlayingId(null);
+        return;
+      }
+
+      console.log(`[useSpeech] Starting post token sequence (${vocalWords.length} words):`, vocalWords);
+
+      let currentIndex = 0;
+
+      const playNextWord = () => {
+        if (playSeqRef.current !== thisSeq) return;
+
+        if (currentIndex >= vocalWords.length) {
+          console.log(`[useSpeech] Post sequence completed [${post.id}]`);
+          setPlayingId(null);
+          currentAudioRef.current = null;
+          return;
+        }
+
+        const currentWord = vocalWords[currentIndex] || '';
+        const wordUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(currentWord)}&le=jap`;
+        console.log(`[useSpeech] Sequence [${currentIndex + 1}/${vocalWords.length}]: "${currentWord}" -> ${wordUrl}`);
+
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = wordUrl;
+        currentAudioRef.current = audio;
+
+        audio.onended = () => {
+          currentIndex += 1;
+          playNextWord();
+        };
+
+        audio.onerror = (e) => {
+          console.warn(`[useSpeech] Word audio skipped on error: "${currentWord}"`, e);
+          currentIndex += 1;
+          playNextWord();
+        };
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => {
+            console.warn(`[useSpeech] Play prevented for word: "${currentWord}"`, err);
+            currentIndex += 1;
+            playNextWord();
+          });
+        }
+      };
+
+      playNextWord();
+    },
+    [stop, speak]
+  );
+
+  return { speak, speakPost, stop, playingId };
 }
