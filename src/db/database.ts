@@ -23,6 +23,7 @@ export interface UserStateEntity {
   totalPostsRead: number;
   totalWordsMastered: number;
   lastActiveTimestamp: number;
+  hasCompletedOnboarding?: boolean;
 }
 
 class ScrollLingoDatabase extends Dexie {
@@ -32,7 +33,7 @@ class ScrollLingoDatabase extends Dexie {
 
   constructor() {
     super('ScrollLingoDB');
-    this.version(2).stores({
+    this.version(3).stores({
       posts: 'id, category, level, createdAt',
       userState: 'id',
       savedWords: 'id, lemma, addedAt',
@@ -60,6 +61,7 @@ export async function initializeDatabase(): Promise<void> {
       totalPostsRead: 0,
       totalWordsMastered: 0,
       lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: false,
     };
     await db.userState.add(defaultState);
   } else {
@@ -82,5 +84,6 @@ export function toUserKnowledgeState(entity: UserStateEntity): UserKnowledgeStat
     totalPostsRead: entity.totalPostsRead || 0,
     totalWordsMastered: entity.totalWordsMastered || 0,
     lastActiveTimestamp: entity.lastActiveTimestamp || Date.now(),
+    hasCompletedOnboarding: entity.hasCompletedOnboarding ?? false,
   };
 }

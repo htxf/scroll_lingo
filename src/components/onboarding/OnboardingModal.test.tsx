@@ -17,7 +17,13 @@ describe('OnboardingModal Component', () => {
 
   it('should trigger onComplete with selected categories and baseline level', () => {
     const handleComplete = vi.fn();
-    render(<OnboardingModal isOpen={true} onComplete={handleComplete} />);
+    render(
+      <OnboardingModal
+        isOpen={true}
+        onComplete={handleComplete}
+        initialCategories={['lifestyle', 'coffee', 'tech']}
+      />
+    );
 
     // Go to step 2
     fireEvent.click(screen.getByText('下一步：难度设置'));

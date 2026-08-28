@@ -3,12 +3,19 @@ import { useState } from 'react';
 interface OnboardingModalProps {
   isOpen: boolean;
   onComplete: (selectedCategories: string[], baselineLevel: 'N0' | 'N5' | 'N4' | 'N3') => void;
+  initialCategories?: string[];
+  initialLevel?: 'N0' | 'N5' | 'N4' | 'N3';
 }
 
-export function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
+export function OnboardingModal({
+  isOpen,
+  onComplete,
+  initialCategories = ['lifestyle'],
+  initialLevel = 'N0',
+}: OnboardingModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(['lifestyle', 'coffee', 'tech']);
-  const [selectedLevel, setSelectedLevel] = useState<'N0' | 'N5' | 'N4' | 'N3'>('N0');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategories);
+  const [selectedLevel, setSelectedLevel] = useState<'N0' | 'N5' | 'N4' | 'N3'>(initialLevel);
 
   if (!isOpen) return null;
 

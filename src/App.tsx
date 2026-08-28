@@ -51,7 +51,8 @@ export function App() {
         if (stateEntity) {
           const domainState = toUserKnowledgeState(stateEntity);
           setUserState(domainState);
-          if (stateEntity.totalPostsRead === 0 && stateEntity.explicitKnownWords.length <= 3) {
+          // Only show onboarding if user has NEVER completed onboarding before
+          if (!stateEntity.hasCompletedOnboarding) {
             setShowOnboarding(true);
           }
         }
@@ -104,6 +105,7 @@ export function App() {
       ...userState,
       interestCategories: categories,
       baselineLevel: baselineLevel,
+      hasCompletedOnboarding: true,
     };
 
     setUserState(updatedState);
@@ -119,6 +121,7 @@ export function App() {
       totalPostsRead: updatedState.totalPostsRead,
       totalWordsMastered: updatedState.totalWordsMastered,
       lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: true,
     };
     await db.userState.put(entityUpdate);
     triggerToast(`已设定基线为 ${baselineLevel === 'N0' ? 'N0 萌芽' : `JLPT ${baselineLevel}`}`);
@@ -167,6 +170,7 @@ export function App() {
       totalPostsRead: 15,
       totalWordsMastered: 2,
       lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: true,
     };
 
     const mergedState = mergeUserKnowledgeStates(userState, cloudState);
@@ -183,6 +187,7 @@ export function App() {
       totalPostsRead: mergedState.totalPostsRead,
       totalWordsMastered: mergedState.totalWordsMastered,
       lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: true,
     };
     await db.userState.put(entityUpdate);
     triggerToast(`云端同步成功，已合并 ${mergedState.explicitKnownWords.size} 个词汇`);
@@ -237,6 +242,7 @@ export function App() {
       totalPostsRead: updatedState.totalPostsRead,
       totalWordsMastered: updatedState.totalWordsMastered,
       lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: true,
     };
     await db.userState.put(entityUpdate);
   };
@@ -288,6 +294,7 @@ export function App() {
       totalPostsRead: updatedState.totalPostsRead,
       totalWordsMastered: updatedState.totalWordsMastered,
       lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: true,
     };
     await db.userState.put(entityUpdate);
   };
@@ -436,7 +443,7 @@ export function App() {
                 适度刷帖更利于长期语感沉淀。你可以开启温故复习，或继续加刷。
               </p>
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '6px' }}>
                 <button
                   onClick={() => {
                     setIsReviewOnlyMode(true);
@@ -474,6 +481,24 @@ export function App() {
                 >
                   再来 5 篇推文
                 </button>
+
+                {!userState.userId && (
+                  <button
+                    onClick={() => setShowAuth(true)}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 'var(--border-radius-full)',
+                      border: '1px solid var(--accent-secondary)',
+                      backgroundColor: 'transparent',
+                      color: 'var(--accent-secondary)',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    保存进度到云端
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -530,6 +555,8 @@ export function App() {
       <OnboardingModal
         isOpen={showOnboarding}
         onComplete={handleOnboardingComplete}
+        initialCategories={userState.interestCategories}
+        initialLevel={userState.baselineLevel}
       />
 
       {/* Admin CMS Workbench Modal */}

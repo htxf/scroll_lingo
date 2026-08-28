@@ -71,4 +71,5 @@ export interface UserKnowledgeState {
   totalPostsRead: number;
   totalWordsMastered: number;
   lastActiveTimestamp: number;
+  hasCompletedOnboarding?: boolean;
 }
