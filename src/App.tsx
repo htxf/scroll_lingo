@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { db, initializeDatabase, toUserKnowledgeState, UserStateEntity, SavedWordEntity } from './db/database';
 import { Post, Token, UserKnowledgeState } from './types';
 import { PostCard } from './components/feed/PostCard';
@@ -34,7 +34,14 @@ export function App() {
   const [dailyPostLimit, setDailyPostLimit] = useState<number>(12);
   const [isReviewOnlyMode, setIsReviewOnlyMode] = useState<boolean>(false);
 
-  const { speak, stop, playingId } = useSpeech();
+  const triggerToast = useCallback((msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  }, []);
+
+  const { speak, stop, playingId } = useSpeech({
+    onNetworkWarning: triggerToast,
+  });
 
   useEffect(() => {
     async function loadApp() {
@@ -63,11 +70,6 @@ export function App() {
     }
     loadApp();
   }, []);
-
-  const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
-  };
 
   const handleOnboardingComplete = async (
     categories: string[],
