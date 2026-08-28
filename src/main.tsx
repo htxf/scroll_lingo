@@ -1,6 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import VConsole from 'vconsole';
 import { App } from './App';
+
+// Initialize mobile devtools vConsole for easy on-screen debugging
+new VConsole({ theme: 'dark' });
 
 // Register Service Worker for PWA offline capabilities with instant auto-update
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

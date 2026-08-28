@@ -88,7 +88,7 @@ describe('PostCard Component', () => {
 
     expect(handleSpeak).toHaveBeenCalledWith(
       'あさのコーヒー。',
-      expect.stringContaining('https://fanyi.baidu.com/gettts?lan=jp')
+      expect.stringContaining('https://dict.youdao.com/dictvoice?audio=')
     );
   });
 });

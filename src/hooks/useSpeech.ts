@@ -11,6 +11,8 @@ export function sanitizeSpeechText(text: string): string {
     .replace(/\([^\)]*[\u0370-\u03FF\u0400-\u04FF\u2200-\u22FF\u25A0-\u25FF\u2207\u2200\u03C9\u2207\u2200\u2267\u2266][^\)]*\)/gu, '')
     // Strip remaining decorative symbols
     .replace(/[✨🎉💪🔥⚽️☕️🍣( •̀ ω •́ )✧(≧∇≦)]/g, '')
+    .replace(/[。！？\n]/g, ',')
+    .replace(/[,]{2,}/g, ',')
     .trim();
 }
 
@@ -20,7 +22,6 @@ export function useSpeech() {
   const playSeqRef = useRef<number>(0);
 
   const stop = useCallback(() => {
-    // Increment sequence to invalidate any pending play callbacks
     playSeqRef.current += 1;
 
     // 1. Force abort and destroy current Audio element
@@ -49,7 +50,7 @@ export function useSpeech() {
 
   const speak = useCallback(
     (text: string, id: string = text, customAudioUrl?: string) => {
-      // Step 1: Immediately stop any currently playing audio (strictly 0 echo, 0 double play)
+      // Step 1: Immediately stop any currently playing audio (strictly 0 echo)
       stop();
 
       const cleanText = sanitizeSpeechText(text);
@@ -58,33 +59,31 @@ export function useSpeech() {
       const thisSeq = ++playSeqRef.current;
       setPlayingId(id);
 
-      // Determine Audio URL:
-      // 1. If explicit customAudioUrl is provided (Plan 1), use it directly
-      // 2. If it's a full sentence / has punctuation, use high-speed authentic Japanese sentence MP3 stream
-      // 3. If it's a short token / Kana, use Youdao Japanese dictionary MP3
-      let audioUrl = customAudioUrl;
-      if (!audioUrl) {
-        const isSentence = cleanText.length > 5 || /[。！？、\s]/.test(cleanText);
-        if (isSentence) {
-          audioUrl = `https://fanyi.baidu.com/gettts?lan=jp&text=${encodeURIComponent(cleanText)}&spd=3&source=web`;
-        } else {
-          audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=jap`;
-        }
-      }
+      const targetUrl =
+        customAudioUrl ||
+        `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=jap`;
+
+      console.log(`[useSpeech] Speaking [${id}]:`, targetUrl);
 
       const audio = new Audio();
       audio.preload = 'auto';
-      audio.src = audioUrl;
+      audio.src = targetUrl;
       currentAudioRef.current = audio;
 
+      audio.onplaying = () => {
+        console.log(`[useSpeech] Audio started playing: [${id}]`);
+      };
+
       audio.onended = () => {
+        console.log(`[useSpeech] Audio ended: [${id}]`);
         if (playSeqRef.current === thisSeq) {
           setPlayingId(null);
           currentAudioRef.current = null;
         }
       };
 
-      audio.onerror = () => {
+      audio.onerror = (e) => {
+        console.warn(`[useSpeech] Audio failed to load: [${targetUrl}]`, e);
         if (playSeqRef.current === thisSeq) {
           setPlayingId(null);
           currentAudioRef.current = null;
@@ -93,7 +92,8 @@ export function useSpeech() {
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
+        playPromise.catch((err) => {
+          console.warn(`[useSpeech] Audio play was prevented or failed:`, err);
           if (playSeqRef.current === thisSeq) {
             setPlayingId(null);
             currentAudioRef.current = null;
