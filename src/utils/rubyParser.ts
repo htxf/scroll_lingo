@@ -1,4 +1,4 @@
-import { Token, UserKnowledgeState } from '../types';
+import { Post, Token, UserKnowledgeState } from '../types';
 
 export const LEVEL_RANK: Record<string, number> = {
   N0: 0,
@@ -38,4 +38,16 @@ export function shouldShowFurigana(token: Token, userState: UserKnowledgeState):
   const userRank = LEVEL_RANK[userState.baselineLevel] ?? 0;
 
   return tokenRank > userRank;
+}
+
+/**
+ * Convert a post with Kanji tokens into a pure phonetic Kana speech string (Plan A).
+ * Replaces every Kanji surface with its explicit reading (furigana/kana),
+ * ensuring the speech engine never encounters Chinese Hanzi characters and reads 100% pure Japanese.
+ */
+export function getPostPhoneticText(post: Post): string {
+  if (!post.tokens || post.tokens.length === 0) {
+    return post.contentJa;
+  }
+  return post.tokens.map((token) => token.reading || token.surface).join('');
 }

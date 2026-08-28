@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { shouldShowFurigana } from './rubyParser';
-import { Token, UserKnowledgeState } from '../types';
+import { shouldShowFurigana, getPostPhoneticText } from './rubyParser';
+import { Post, Token, UserKnowledgeState } from '../types';
 
 describe('rubyParser - shouldShowFurigana', () => {
   const createMockToken = (overrides: Partial<Token> = {}): Token => ({
@@ -68,5 +68,52 @@ describe('rubyParser - shouldShowFurigana', () => {
     });
 
     expect(shouldShowFurigana(n5Token, state)).toBe(true);
+  });
+});
+
+describe('rubyParser - getPostPhoneticText', () => {
+  it('should convert all Kanji surfaces to their explicit readings for 100% pure Japanese speech', () => {
+    const mockPost: Post = {
+      id: 'post_1',
+      category: 'coffee',
+      level: 'N5',
+      contentJa: '朝の珈琲。いい香り。☕️✨',
+      translationZh: '早晨的咖啡。真香。',
+      createdAt: '1小时前',
+      likesCount: 12,
+      repostsCount: 2,
+      comments: [],
+      persona: { id: 'p1', name: 'Kissa', handle: '@kissa', avatarUrl: '☕', bioZh: 'Bio', category: 'coffee' },
+      tokens: [
+        { id: '1', surface: '朝', reading: 'あさ', romaji: 'asa', lemma: '朝', pos: '名词', level: 'N5', definitionZh: '早晨' },
+        { id: '2', surface: 'の', reading: 'の', romaji: 'no', lemma: 'の', pos: '助词', level: 'N5', definitionZh: '的' },
+        { id: '3', surface: '珈琲', reading: 'コーヒー', romaji: 'kōhī', lemma: '珈琲', pos: '名词', level: 'N5', definitionZh: '咖啡' },
+        { id: '4', surface: '。', reading: '。', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '' },
+        { id: '5', surface: 'いい', reading: 'いい', romaji: 'ii', lemma: 'いい', pos: '形容词', level: 'N5', definitionZh: '好的' },
+        { id: '6', surface: '香り', reading: 'かおり', romaji: 'kaori', lemma: '香り', pos: '名词', level: 'N5', definitionZh: '香气' },
+        { id: '7', surface: '。', reading: '。', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '' },
+      ],
+    };
+
+    const phoneticText = getPostPhoneticText(mockPost);
+    expect(phoneticText).toBe('あさのコーヒー。いいかおり。');
+  });
+
+  it('should fallback to contentJa if tokens array is empty', () => {
+    const mockPost: Post = {
+      id: 'post_empty',
+      category: 'lifestyle',
+      level: 'N0',
+      contentJa: 'あ！ねこ！',
+      translationZh: '啊！猫！',
+      createdAt: '1小时前',
+      likesCount: 5,
+      repostsCount: 0,
+      comments: [],
+      persona: { id: 'p2', name: 'Cat', handle: '@cat', avatarUrl: '🐱', bioZh: 'Bio', category: 'lifestyle' },
+      tokens: [],
+    };
+
+    expect(getPostPhoneticText(mockPost)).toBe('あ！ねこ！');
   });
 });

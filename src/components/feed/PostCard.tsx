@@ -3,6 +3,7 @@ import { Post, Token, UserKnowledgeState } from '../../types';
 import { PersonaHeader } from './PersonaHeader';
 import { ActionButtons } from './ActionButtons';
 import { RubyTokenText } from '../reader/RubyTokenText';
+import { getPostPhoneticText } from '../../utils/rubyParser';
 
 interface PostCardProps {
   post: Post;
@@ -30,7 +31,9 @@ export function PostCard({
     if (isPlayingAudio && onStopText) {
       onStopText();
     } else {
-      onSpeakText(post.contentJa);
+      // Plan A: Speak using pure Kana reading transliteration, completely eliminating Chinese character mispronunciation
+      const phoneticText = getPostPhoneticText(post);
+      onSpeakText(phoneticText);
     }
   };
 

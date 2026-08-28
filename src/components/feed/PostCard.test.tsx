@@ -23,6 +23,9 @@ describe('PostCard Component', () => {
     createdAt: '10m ago',
     tokens: [
       { id: 't1', surface: '朝', reading: 'あさ', romaji: 'asa', lemma: '朝', pos: '名词', level: 'N5', definitionZh: '早晨' },
+      { id: 't2', surface: 'の', reading: 'の', romaji: 'no', lemma: 'の', pos: '助词', level: 'N5', definitionZh: '的' },
+      { id: 't3', surface: '珈琲', reading: 'コーヒー', romaji: 'kōhī', lemma: '珈琲', pos: '名词', level: 'N5', definitionZh: '咖啡' },
+      { id: 't4', surface: '。', reading: '。', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '' },
     ],
     comments: [],
   };
@@ -67,5 +70,22 @@ describe('PostCard Component', () => {
     fireEvent.click(modeButton);
 
     expect(screen.getByText('纯享')).not.toBeNull();
+  });
+
+  it('should trigger onSpeakText with pure phonetic Kana reading text (Plan A)', () => {
+    const handleSpeak = vi.fn();
+    render(
+      <PostCard
+        post={mockPost}
+        userState={mockUserState}
+        onTokenClick={vi.fn()}
+        onSpeakText={handleSpeak}
+      />
+    );
+
+    const speakerButton = screen.getByTitle('朗读推文');
+    fireEvent.click(speakerButton);
+
+    expect(handleSpeak).toHaveBeenCalledWith('あさのコーヒー。');
   });
 });
