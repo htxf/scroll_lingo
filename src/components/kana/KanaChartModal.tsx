@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSpeech } from '../../hooks/useSpeech';
 
 interface KanaChartModalProps {
@@ -12,7 +13,8 @@ interface KanaItem {
 }
 
 export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
-  const { speak } = useSpeech();
+  const { speak, playingId } = useSpeech();
+  const [activeKana, setActiveKana] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -119,6 +121,14 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
     },
   ];
 
+  const handleKanaClick = (hira: string) => {
+    setActiveKana(hira);
+    speak(hira, `kana_${hira}`);
+    setTimeout(() => {
+      setActiveKana((prev) => (prev === hira ? null : prev));
+    }, 1200);
+  };
+
   return (
     <div
       style={{
@@ -159,7 +169,7 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
               五十音图点读卡
             </h2>
             <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-              点击假名听发音 (平假名 / 片假名 / 罗马音)
+              点击假名即时发音 (平假名 / 片假名 / 罗马音)
             </p>
           </div>
           <button
@@ -182,13 +192,14 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
                   if (!item) {
                     return <div key={cIdx} style={{ height: '52px' }} />;
                   }
+                  const isSelected = activeKana === item.hira || playingId === `kana_${item.hira}`;
                   return (
                     <button
                       key={cIdx}
-                      onClick={() => speak(item.hira)}
+                      onClick={() => handleKanaClick(item.hira)}
                       style={{
-                        backgroundColor: 'var(--bg-primary)',
-                        border: '1px solid var(--border-color)',
+                        backgroundColor: isSelected ? 'var(--bg-tertiary)' : 'var(--bg-primary)',
+                        border: isSelected ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)',
                         borderRadius: 'var(--border-radius-sm)',
                         padding: '6px',
                         display: 'flex',
@@ -197,13 +208,25 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
                         justifyContent: 'center',
                         gap: '2px',
                         cursor: 'pointer',
-                        transition: 'all 0.15s ease',
+                        transform: isSelected ? 'scale(0.94)' : 'scale(1)',
+                        boxShadow: isSelected ? '0 0 8px rgba(29, 155, 240, 0.3)' : 'none',
+                        transition: 'all 0.12s ease',
                       }}
                     >
-                      <span style={{ fontSize: '15px', fontWeight: 'bold', fontFamily: 'var(--font-japanese)', color: 'var(--text-primary)' }}>
-                        {item.hira} <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'normal' }}>{item.kata}</span>
+                      <span
+                        style={{
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          fontFamily: 'var(--font-japanese)',
+                          color: isSelected ? 'var(--accent-primary)' : 'var(--text-primary)',
+                        }}
+                      >
+                        {item.hira}{' '}
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                          {item.kata}
+                        </span>
                       </span>
-                      <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>
+                      <span style={{ fontSize: '10px', color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)', fontWeight: isSelected ? 'bold' : 'normal' }}>
                         {item.romaji}
                       </span>
                     </button>
