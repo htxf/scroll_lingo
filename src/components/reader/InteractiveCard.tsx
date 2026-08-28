@@ -46,19 +46,20 @@ export function InteractiveCard({
 
     setTimeout(() => {
       setAiBreakdown(
-        `【句式解构】\n` +
-        `• 含义：${token.definitionZh}\n` +
-        `• 语境：高频社交表达，无需记忆复杂变形。`
+        `【句式与语境解构】\n` +
+        `• 核心词性：${token.pos || '基础词汇'}\n` +
+        `• 标准释义：${token.definitionZh}\n` +
+        `• 日常语境：日本社交平台高频短语，无需死记复杂变形，顺口跟读即可掌握。`
       );
       setIsAiLoading(false);
-    }, 400);
+    }, 300);
   };
 
   const handleSpeechToggle = () => {
     if (isPlaying) {
       stop();
     } else {
-      speak(token.surface, token.id);
+      speak(token.surface, `card_${token.id}`);
     }
   };
 
@@ -76,39 +77,42 @@ export function InteractiveCard({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
         backdropFilter: 'var(--glass-blur)',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-end',
-        zIndex: 1000,
+        alignItems: 'center',
+        zIndex: 3000,
+        padding: '16px',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
       }}
       onClick={onClose}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: '480px',
-          maxHeight: '88vh',
+          maxWidth: '440px',
+          maxHeight: '90vh',
           backgroundColor: 'var(--bg-secondary)',
-          borderTopLeftRadius: 'var(--border-radius-lg)',
-          borderTopRightRadius: 'var(--border-radius-lg)',
+          borderRadius: 'var(--border-radius-lg)',
           border: '1px solid var(--border-color)',
-          padding: '20px 20px 36px 20px',
+          padding: '20px 18px 24px 18px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px',
+          gap: '14px',
           boxShadow: 'var(--shadow-md)',
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
-          animation: 'slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+          userSelect: 'text',
+          margin: 'auto 0',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with Type, Level and Clear Close '✕' Button */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 'bold' }}>
               {isKanaToken ? '假名卡' : '词汇卡'} · {simplifyPos(token.pos)}
             </span>
             <span
@@ -131,13 +135,13 @@ export function InteractiveCard({
               background: 'var(--bg-tertiary)',
               border: '1px solid var(--border-color)',
               color: 'var(--text-secondary)',
-              width: '28px',
-              height: '28px',
+              width: '30px',
+              height: '30px',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '14px',
+              fontSize: '15px',
               cursor: 'pointer',
               fontWeight: 'bold',
             }}
@@ -154,7 +158,7 @@ export function InteractiveCard({
             justifyContent: 'space-between',
             alignItems: 'center',
             backgroundColor: 'var(--bg-primary)',
-            padding: '16px',
+            padding: '14px 16px',
             borderRadius: 'var(--border-radius-md)',
             border: '1px solid var(--border-color)',
           }}
@@ -163,7 +167,7 @@ export function InteractiveCard({
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
               <span
                 style={{
-                  fontSize: isKanaToken ? '36px' : '26px',
+                  fontSize: isKanaToken ? '34px' : '26px',
                   fontWeight: 'bold',
                   fontFamily: 'var(--font-japanese)',
                   color: 'var(--text-primary)',
@@ -172,7 +176,7 @@ export function InteractiveCard({
                 {token.surface}
               </span>
               {token.reading && token.reading !== token.surface && (
-                <span style={{ fontSize: '16px', color: 'var(--accent-primary)', fontWeight: 'bold' }}>
+                <span style={{ fontSize: '15px', color: 'var(--accent-primary)', fontWeight: 'bold' }}>
                   {token.reading}
                 </span>
               )}
@@ -189,14 +193,15 @@ export function InteractiveCard({
               color: '#ffffff',
               border: 'none',
               borderRadius: '50%',
-              width: '42px',
-              height: '42px',
+              width: '40px',
+              height: '40px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              fontSize: '18px',
+              fontSize: '16px',
               transition: 'all 0.15s ease',
+              flexShrink: 0,
             }}
           >
             {isPlaying ? '⏸' : '🔊'}
@@ -209,13 +214,13 @@ export function InteractiveCard({
         )}
 
         {/* Definition */}
-        <div style={{ background: 'var(--bg-tertiary)', padding: '12px', borderRadius: 'var(--border-radius-md)' }}>
-          <div style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: 500 }}>
+        <div style={{ background: 'var(--bg-tertiary)', padding: '12px 14px', borderRadius: 'var(--border-radius-md)' }}>
+          <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500, lineHeight: '1.4' }}>
             {token.definitionZh || '暂无释义'}
           </div>
         </div>
 
-        {/* Action Toggles */}
+        {/* Action Toggles: 已掌握 / 已关注 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <button
             onClick={() => onToggleKnown(token.lemma)}
@@ -231,7 +236,7 @@ export function InteractiveCard({
               transition: 'all 0.15s ease',
             }}
           >
-            {isKnown ? '已掌握' : '标为掌握'}
+            {isKnown ? '✓ 已掌握' : '标为掌握'}
           </button>
 
           <button
@@ -248,12 +253,12 @@ export function InteractiveCard({
               transition: 'all 0.15s ease',
             }}
           >
-            {isFocus ? '已关注' : '关注此词'}
+            {isFocus ? '★ 已关注' : '关注此词'}
           </button>
         </div>
 
-        {/* AI Deep Breakdown Section */}
-        <div style={{ marginTop: '2px' }}>
+        {/* AI Deep Breakdown Section (100% visible, fully scrollable) */}
+        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
           {!aiBreakdown && !isAiLoading && (
             <button
               onClick={handleAiDeepDive}
@@ -262,31 +267,34 @@ export function InteractiveCard({
                 padding: '10px',
                 borderRadius: 'var(--border-radius-sm)',
                 border: '1px solid var(--border-color)',
-                backgroundColor: 'transparent',
+                backgroundColor: 'var(--bg-primary)',
                 color: 'var(--text-secondary)',
                 fontSize: '12px',
+                fontWeight: 500,
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
-              AI 语法解构
+              AI 语法解构与拓展
             </button>
           )}
 
           {isAiLoading && (
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center', padding: '6px' }}>
-              正在解析...
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center', padding: '8px' }}>
+              正在生成解析...
             </div>
           )}
 
           {aiBreakdown && (
             <div
               style={{
-                backgroundColor: 'var(--bg-tertiary)',
-                padding: '10px 12px',
+                backgroundColor: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                padding: '12px 14px',
                 borderRadius: 'var(--border-radius-sm)',
                 fontSize: '12px',
                 whiteSpace: 'pre-wrap',
-                lineHeight: '1.5',
+                lineHeight: '1.6',
                 color: 'var(--text-primary)',
               }}
             >
