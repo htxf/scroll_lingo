@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 /**
- * Helper to sanitize speech text by stripping out emojis, kaomoji, and non-speech symbols
+ * Pure helper to sanitize speech text by stripping out emojis, kaomoji, and non-speech symbols
  */
 export function sanitizeSpeechText(text: string): string {
   return text
@@ -14,18 +14,13 @@ export function sanitizeSpeechText(text: string): string {
     .trim();
 }
 
-interface UseSpeechOptions {
-  onNetworkWarning?: (msg: string) => void;
-}
-
-export function useSpeech(options?: UseSpeechOptions) {
+export function useSpeech() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const playSeqRef = useRef<number>(0);
-  const timeoutTimerRef = useRef<NodeJS.Timeout | null>(null);
   const japaneseVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
-  // Initialize and detect native Japanese voice for offline emergency fallback
+  // Pre-fetch and lock the Japanese voice on load & voice changes
   useEffect(() => {
     if (!('speechSynthesis' in window)) return;
 
@@ -61,17 +56,13 @@ export function useSpeech(options?: UseSpeechOptions) {
   }, []);
 
   const stop = useCallback(() => {
+    // Bump sequence to invalidate any pending playback
     playSeqRef.current += 1;
 
-    if (timeoutTimerRef.current) {
-      clearTimeout(timeoutTimerRef.current);
-      timeoutTimerRef.current = null;
-    }
-
+    // 1. Instantly pause, clear and destroy Audio element
     if (currentAudioRef.current) {
       try {
         currentAudioRef.current.pause();
-        currentAudioRef.current.currentTime = 0;
         currentAudioRef.current.src = '';
         currentAudioRef.current.load();
       } catch {
@@ -80,6 +71,7 @@ export function useSpeech(options?: UseSpeechOptions) {
       currentAudioRef.current = null;
     }
 
+    // 2. Instantly cancel Web Speech Synthesis
     if ('speechSynthesis' in window) {
       try {
         window.speechSynthesis.cancel();
@@ -91,48 +83,9 @@ export function useSpeech(options?: UseSpeechOptions) {
     setPlayingId(null);
   }, []);
 
-  const playLocalSpeechSynthesis = useCallback(
-    (cleanText: string, id: string, thisSeq: number) => {
-      if (!('speechSynthesis' in window)) {
-        if (playSeqRef.current === thisSeq) setPlayingId(null);
-        return;
-      }
-
-      try {
-        window.speechSynthesis.cancel();
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = 'ja-JP';
-        utterance.rate = 0.9;
-
-        if (japaneseVoiceRef.current) {
-          utterance.voice = japaneseVoiceRef.current;
-        }
-
-        utterance.onstart = () => {
-          if (playSeqRef.current === thisSeq) setPlayingId(id);
-        };
-        utterance.onend = () => {
-          if (playSeqRef.current === thisSeq) setPlayingId(null);
-        };
-        utterance.onerror = () => {
-          if (playSeqRef.current === thisSeq) setPlayingId(null);
-        };
-
-        window.speechSynthesis.speak(utterance);
-      } catch {
-        if (playSeqRef.current === thisSeq) setPlayingId(null);
-      }
-    },
-    []
-  );
-
   const speak = useCallback(
     (text: string, id: string = text) => {
-      // 1. Force stop and destroy any currently playing audio immediately
+      // Step 1: Force stop everything immediately to guarantee 0 echo and 0 double-play
       stop();
 
       const cleanText = sanitizeSpeechText(text);
@@ -141,77 +94,113 @@ export function useSpeech(options?: UseSpeechOptions) {
       const thisSeq = ++playSeqRef.current;
       setPlayingId(id);
 
-      // Plan B: High-Fidelity Microsoft Edge-TTS Japanese Neural Audio API (/api/tts)
-      const edgeTtsUrl = `/api/tts?text=${encodeURIComponent(cleanText)}&voice=ja-JP-NanamiNeural`;
-      const youdaoBackupUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=jap`;
+      // Determine if text is a full sentence or single token/kana
+      const isSentence = cleanText.length > 6 || /[。！？、\s]/.test(cleanText);
 
-      let hasStarted = false;
+      // =========================================================================
+      // CASE 1: Full Sentences -> Direct Local Web Speech Synthesis (0 network, 0ms, 100% pure kana)
+      // =========================================================================
+      if (isSentence) {
+        if (!('speechSynthesis' in window)) {
+          setPlayingId(null);
+          return;
+        }
 
-      const tryAudioStream = (url: string, onFail: () => void) => {
-        const audio = new Audio();
-        audio.preload = 'auto';
-        audio.src = url;
-        currentAudioRef.current = audio;
-
-        audio.onplaying = () => {
-          hasStarted = true;
-          if (timeoutTimerRef.current) {
-            clearTimeout(timeoutTimerRef.current);
-            timeoutTimerRef.current = null;
+        try {
+          window.speechSynthesis.cancel();
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
           }
-        };
 
-        audio.onended = () => {
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.lang = 'ja-JP';
+          utterance.rate = 0.9;
+
+          if (japaneseVoiceRef.current) {
+            utterance.voice = japaneseVoiceRef.current;
+          }
+
+          utterance.onstart = () => {
+            if (playSeqRef.current === thisSeq) {
+              setPlayingId(id);
+            }
+          };
+
+          utterance.onend = () => {
+            if (playSeqRef.current === thisSeq) {
+              setPlayingId(null);
+            }
+          };
+
+          utterance.onerror = () => {
+            if (playSeqRef.current === thisSeq) {
+              setPlayingId(null);
+            }
+          };
+
+          window.speechSynthesis.speak(utterance);
+        } catch {
           if (playSeqRef.current === thisSeq) {
             setPlayingId(null);
-            currentAudioRef.current = null;
           }
-        };
+        }
+        return;
+      }
 
-        audio.onerror = () => {
-          if (playSeqRef.current === thisSeq && !hasStarted) {
-            onFail();
-          }
-        };
+      // =========================================================================
+      // CASE 2: Single Words / Fifty-Sounds Kana -> High-Speed Native Human Japanese MP3
+      // =========================================================================
+      const audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&le=jap`;
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.src = audioUrl;
+      currentAudioRef.current = audio;
 
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            if (playSeqRef.current === thisSeq && !hasStarted) {
-              onFail();
-            }
-          });
+      audio.onended = () => {
+        if (playSeqRef.current === thisSeq) {
+          setPlayingId(null);
+          currentAudioRef.current = null;
         }
       };
 
-      // 1. Try Plan B Edge-TTS first
-      tryAudioStream(edgeTtsUrl, () => {
-        // 2. If Edge-TTS fails/offline, try backup Youdao stream
-        tryAudioStream(youdaoBackupUrl, () => {
-          // 3. If all network audio fails, notify user and fallback to local speech
-          if (options?.onNetworkWarning) {
-            options.onNetworkWarning('网络连接较慢，已切换至离线发音模式');
+      audio.onerror = () => {
+        if (playSeqRef.current === thisSeq) {
+          // If network audio fails, fallback to local Web Speech once (no overlapping)
+          if ('speechSynthesis' in window) {
+            try {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(cleanText);
+              utterance.lang = 'ja-JP';
+              utterance.rate = 0.9;
+              if (japaneseVoiceRef.current) {
+                utterance.voice = japaneseVoiceRef.current;
+              }
+              utterance.onend = () => {
+                if (playSeqRef.current === thisSeq) setPlayingId(null);
+              };
+              utterance.onerror = () => {
+                if (playSeqRef.current === thisSeq) setPlayingId(null);
+              };
+              window.speechSynthesis.speak(utterance);
+            } catch {
+              setPlayingId(null);
+            }
+          } else {
+            setPlayingId(null);
           }
-          playLocalSpeechSynthesis(cleanText, id, thisSeq);
-        });
-      });
-
-      // 1.5s network timeout protection
-      timeoutTimerRef.current = setTimeout(() => {
-        if (playSeqRef.current === thisSeq && !hasStarted) {
-          if (options?.onNetworkWarning) {
-            options.onNetworkWarning('网络响应缓慢，已切换至离线发音模式');
-          }
-          if (currentAudioRef.current) {
-            currentAudioRef.current.pause();
-            currentAudioRef.current.src = '';
-            currentAudioRef.current = null;
-          }
-          playLocalSpeechSynthesis(cleanText, id, thisSeq);
         }
-      }, 1500);
+      };
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          if (playSeqRef.current === thisSeq) {
+            setPlayingId(null);
+          }
+        });
+      }
     },
-    [stop, playLocalSpeechSynthesis, options]
+    [stop]
   );
 
   return { speak, stop, playingId };

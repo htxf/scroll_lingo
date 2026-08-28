@@ -39,9 +39,7 @@ export function App() {
     setTimeout(() => setToastMessage(null), 2500);
   }, []);
 
-  const { speak, stop, playingId } = useSpeech({
-    onNetworkWarning: triggerToast,
-  });
+  const { speak, stop, playingId } = useSpeech();
 
   useEffect(() => {
     async function loadApp() {
