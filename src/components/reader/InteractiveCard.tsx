@@ -76,7 +76,7 @@ export function InteractiveCard({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         backdropFilter: 'var(--glass-blur)',
         display: 'flex',
         justifyContent: 'center',
@@ -89,47 +89,86 @@ export function InteractiveCard({
         style={{
           width: '100%',
           maxWidth: '480px',
+          maxHeight: '88vh',
           backgroundColor: 'var(--bg-secondary)',
           borderTopLeftRadius: 'var(--border-radius-lg)',
           borderTopRightRadius: 'var(--border-radius-lg)',
           border: '1px solid var(--border-color)',
-          padding: '20px',
+          padding: '20px 20px 36px 20px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
           boxShadow: 'var(--shadow-md)',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
           animation: 'slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drawer Handle Bar */}
-        <div style={{ width: '36px', height: '4px', backgroundColor: 'var(--border-color)', borderRadius: '2px', alignSelf: 'center' }} />
-
-        {/* Card Header Type Badge */}
+        {/* Header with Type, Level and Clear Close '✕' Button */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
-            {isKanaToken ? '假名卡' : '词汇卡'} · {simplifyPos(token.pos)}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+              {isKanaToken ? '假名卡' : '词汇卡'} · {simplifyPos(token.pos)}
+            </span>
+            <span
+              style={{
+                padding: '2px 8px',
+                borderRadius: 'var(--border-radius-full)',
+                backgroundColor: 'var(--bg-tertiary)',
+                color: 'var(--accent-primary)',
+                fontSize: '11px',
+                fontWeight: 'bold',
+              }}
+            >
+              {token.level === 'N0' ? 'N0' : token.level}
+            </span>
+          </div>
 
-          <span
+          <button
+            onClick={onClose}
             style={{
-              padding: '2px 8px',
-              borderRadius: 'var(--border-radius-full)',
-              backgroundColor: 'var(--bg-tertiary)',
-              color: 'var(--accent-primary)',
-              fontSize: '11px',
+              background: 'var(--bg-tertiary)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-secondary)',
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              cursor: 'pointer',
               fontWeight: 'bold',
             }}
+            title="关闭卡片"
           >
-            {token.level === 'N0' ? 'N0' : token.level}
-          </span>
+            ✕
+          </button>
         </div>
 
         {/* Word Display Block */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-primary)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid var(--border-color)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: 'var(--bg-primary)',
+            padding: '16px',
+            borderRadius: 'var(--border-radius-md)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-              <span style={{ fontSize: isKanaToken ? '36px' : '26px', fontWeight: 'bold', fontFamily: 'var(--font-japanese)', color: 'var(--text-primary)' }}>
+              <span
+                style={{
+                  fontSize: isKanaToken ? '36px' : '26px',
+                  fontWeight: 'bold',
+                  fontFamily: 'var(--font-japanese)',
+                  color: 'var(--text-primary)',
+                }}
+              >
                 {token.surface}
               </span>
               {token.reading && token.reading !== token.surface && (
@@ -138,9 +177,7 @@ export function InteractiveCard({
                 </span>
               )}
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-              {token.romaji}
-            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{token.romaji}</div>
           </div>
 
           {/* Speaker Audio Play/Pause Button */}
@@ -166,7 +203,7 @@ export function InteractiveCard({
           </button>
         </div>
 
-        {/* Pitch Accent Diagram View: Always render pitch contour SVG for any word token */}
+        {/* Pitch Accent Diagram View */}
         {token.reading && (
           <PitchAccentView reading={token.reading} pitchAccent={activePitchAccent} />
         )}
@@ -216,7 +253,7 @@ export function InteractiveCard({
         </div>
 
         {/* AI Deep Breakdown Section */}
-        <div>
+        <div style={{ marginTop: '2px' }}>
           {!aiBreakdown && !isAiLoading && (
             <button
               onClick={handleAiDeepDive}

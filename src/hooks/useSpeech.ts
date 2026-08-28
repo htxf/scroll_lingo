@@ -77,29 +77,42 @@ export function useSpeech() {
 
       setPlayingId(id);
 
-      // Strategy 1: High-Fidelity Authentic Japanese Audio Stream (Guaranteed 100% Native ja-JP)
-      // Works across all mobile devices (iOS Safari, Android Chrome, WeChat, Xiaomi) even without Japanese voice packs
-      try {
-        const audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&type=2&le=jap`;
-        const audio = new Audio(audioUrl);
-        audioRef.current = audio;
+      // Strategy 1: Google Japanese Full-Sentence & Word TTS Stream
+      // Generates 100% natural, continuous native Japanese female voice for ANY arbitrary Japanese sentence or word
+      const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ja&q=${encodeURIComponent(cleanText)}`;
+      const youdaoTtsUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(cleanText)}&type=2&le=jap`;
 
-        audio.onended = () => setPlayingId(null);
-        audio.onerror = () => {
-          // Fallback to Strategy 2: Web Speech API
-          fallbackWebSpeech(cleanText, id);
-        };
+      const tryPlayUrl = (url: string, onFail: () => void) => {
+        try {
+          const audio = new Audio(url);
+          audioRef.current = audio;
 
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // If autoplay/network fails, fallback to Web Speech API
-            fallbackWebSpeech(cleanText, id);
-          });
+          audio.onended = () => {
+            setPlayingId(null);
+            audioRef.current = null;
+          };
+
+          audio.onerror = () => {
+            onFail();
+          };
+
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              onFail();
+            });
+          }
+        } catch {
+          onFail();
         }
-      } catch {
-        fallbackWebSpeech(cleanText, id);
-      }
+      };
+
+      // Play Google TTS -> if failed, try Youdao -> if failed, try Web Speech API
+      tryPlayUrl(googleTtsUrl, () => {
+        tryPlayUrl(youdaoTtsUrl, () => {
+          fallbackWebSpeech(cleanText, id);
+        });
+      });
     },
     [stop]
   );
@@ -125,8 +138,12 @@ export function useSpeech() {
       }
 
       utterance.onstart = () => setPlayingId(id);
-      utterance.onend = () => setPlayingId(null);
-      utterance.onerror = () => setPlayingId(null);
+      utterance.onend = () => {
+        setPlayingId(null);
+      };
+      utterance.onerror = () => {
+        setPlayingId(null);
+      };
 
       window.speechSynthesis.speak(utterance);
     } catch {
