@@ -10,69 +10,70 @@ export function ProfileTab({ userState, onOpenOnboarding, onOpenAuth }: ProfileT
   const isCloudSynced = Boolean(userState.userId);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       {/* Profile Card */}
       <div
         style={{
           background: 'var(--bg-secondary)',
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--border-radius-md)',
-          padding: '20px',
+          padding: 'var(--space-5)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: 'var(--space-4)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
           <div
             style={{
-              width: '52px',
-              height: '52px',
+              width: '50px',
+              height: '50px',
               borderRadius: '50%',
-              backgroundColor: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-color)',
-              color: 'var(--accent-primary)',
+              backgroundColor: isCloudSynced ? 'rgba(0, 186, 124, 0.15)' : 'var(--bg-tertiary)',
+              border: `1px solid ${isCloudSynced ? 'var(--accent-secondary)' : 'var(--border-color)'}`,
+              color: isCloudSynced ? 'var(--accent-secondary)' : 'var(--accent-primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '18px',
-              fontWeight: 'bold',
+              fontSize: '20px',
+              fontWeight: 700,
             }}
           >
-            {isCloudSynced ? '云' : '客'}
+            {isCloudSynced ? '☁️' : '👤'}
           </div>
 
           <div>
-            <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-              {isCloudSynced ? userState.userId : '游客账号'}
+            <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+              {isCloudSynced ? userState.userId : '游客档案'}
             </h2>
             <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-              {isCloudSynced ? '已开启云端无损同步' : `设备 ID: ${userState.deviceUuid.slice(0, 13)}...`}
+              {isCloudSynced ? '已开启云端多端实时同步' : `设备 ID: ${userState.deviceUuid.slice(0, 12)}...`}
             </p>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginTop: '8px' }}>
-          <div style={{ background: 'var(--bg-tertiary)', padding: '12px', borderRadius: 'var(--border-radius-sm)', textAlign: 'center' }}>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--accent-secondary)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
+          <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-3)', borderRadius: 'var(--border-radius-sm)', textAlign: 'center', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--accent-secondary)' }}>
               {userState.totalWordsMastered}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>掌握词汇</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', fontWeight: 500 }}>掌握词汇</div>
           </div>
 
-          <div style={{ background: 'var(--bg-tertiary)', padding: '12px', borderRadius: 'var(--border-radius-sm)', textAlign: 'center' }}>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--accent-primary)' }}>
+          <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-3)', borderRadius: 'var(--border-radius-sm)', textAlign: 'center', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--accent-primary)', lineHeight: '1.25' }}>
               {userState.baselineLevel === 'N0' ? 'N0 萌芽' : `JLPT ${userState.baselineLevel}`}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>当前基线</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 500 }}>当前基线</div>
           </div>
 
-          <div style={{ background: 'var(--bg-tertiary)', padding: '12px', borderRadius: 'var(--border-radius-sm)', textAlign: 'center' }}>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--accent-warning)' }}>
+          <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-3)', borderRadius: 'var(--border-radius-sm)', textAlign: 'center', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--accent-warning)' }}>
               {userState.explicitFocusWords.size}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>重点关注</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', fontWeight: 500 }}>重点生词</div>
           </div>
         </div>
       </div>
@@ -83,34 +84,36 @@ export function ProfileTab({ userState, onOpenOnboarding, onOpenAuth }: ProfileT
           background: 'var(--bg-secondary)',
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--border-radius-md)',
-          padding: '16px',
+          padding: 'var(--space-4)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: 'var(--space-3)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
           多设备云端同步
         </h3>
 
         <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
           {isCloudSynced
-            ? '当前账号已关联 Supabase Auth。跨设备学习进度实时并集同步。'
-            : '开启云端同步后，积累的掌握词汇将自动与云端账号并集合并。'}
+            ? '当前账号已关联 Supabase Auth。跨设备词汇掌握度与学习偏好实时同步。'
+            : '开启云端同步后，本地掌握生词与推文偏好将自动与云端安全合并。'}
         </p>
 
         {!isCloudSynced && (
           <button
             onClick={onOpenAuth}
             style={{
-              padding: '10px',
-              borderRadius: 'var(--border-radius-sm)',
+              padding: '10px 16px',
+              borderRadius: 'var(--border-radius-full)',
               border: 'none',
               backgroundColor: 'var(--accent-secondary)',
               color: '#ffffff',
               fontSize: '13px',
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: 'pointer',
+              minHeight: '42px',
             }}
           >
             开启多设备云端同步
@@ -124,32 +127,35 @@ export function ProfileTab({ userState, onOpenOnboarding, onOpenAuth }: ProfileT
           background: 'var(--bg-secondary)',
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--border-radius-md)',
-          padding: '16px',
+          padding: 'var(--space-4)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: 'var(--space-3)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-          学习偏好与重设
+        <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
+          偏好与算法基线
         </h3>
 
-        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <div>关注领域: <strong>{userState.interestCategories.join(', ')}</strong></div>
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <div>关注领域: <strong style={{ color: 'var(--text-primary)' }}>{userState.interestCategories.join('、')}</strong></div>
           <div>算法判定: <strong style={{ color: 'var(--accent-secondary)' }}>隐性动态调节开启</strong></div>
         </div>
 
         <button
           onClick={onOpenOnboarding}
           style={{
-            padding: '8px',
+            padding: '10px',
             borderRadius: 'var(--border-radius-sm)',
             border: '1px solid var(--border-color)',
-            backgroundColor: 'transparent',
+            backgroundColor: 'var(--bg-tertiary)',
             color: 'var(--text-primary)',
             fontSize: '12px',
+            fontWeight: 600,
             cursor: 'pointer',
-            marginTop: '4px',
+            marginTop: 'var(--space-1)',
+            minHeight: '40px',
           }}
         >
           重新设置兴趣与感官基线

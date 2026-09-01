@@ -78,30 +78,31 @@ export function InteractiveCard({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        backgroundColor: 'rgba(0, 0, 0, 0.82)',
         backdropFilter: 'var(--glass-blur)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 3000,
-        padding: '16px',
+        padding: 'var(--space-4)',
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}
       onClick={handleCardClose}
     >
       <div
+        className="animate-modal"
         style={{
           width: '100%',
-          maxWidth: '440px',
-          maxHeight: '90vh',
+          maxWidth: '420px',
+          maxHeight: '88vh',
           backgroundColor: 'var(--bg-secondary)',
           borderRadius: 'var(--border-radius-lg)',
           border: '1px solid var(--border-color)',
-          padding: '20px 18px 24px 18px',
+          padding: 'var(--space-5)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '14px',
+          gap: 'var(--space-3)',
           boxShadow: 'var(--shadow-md)',
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
@@ -222,19 +223,20 @@ export function InteractiveCard({
         </div>
 
         {/* Action Toggles: 已掌握 / 已关注 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
           <button
             onClick={() => onToggleKnown(token.lemma)}
             style={{
-              padding: '10px',
+              padding: '12px 14px',
               borderRadius: 'var(--border-radius-sm)',
-              border: 'none',
+              border: isKnown ? '1px solid var(--accent-secondary)' : '1px solid var(--border-color)',
               backgroundColor: isKnown ? 'var(--accent-secondary)' : 'var(--bg-tertiary)',
               color: isKnown ? '#ffffff' : 'var(--text-primary)',
               fontSize: '13px',
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
+              transition: 'background-color 0.15s ease, border-color 0.15s ease',
+              minHeight: '44px',
             }}
           >
             {isKnown ? '✓ 已掌握' : '标为掌握'}
@@ -243,15 +245,16 @@ export function InteractiveCard({
           <button
             onClick={() => onToggleFocus(token.lemma)}
             style={{
-              padding: '10px',
+              padding: '12px 14px',
               borderRadius: 'var(--border-radius-sm)',
-              border: 'none',
+              border: isFocus ? '1px solid var(--accent-warning)' : '1px solid var(--border-color)',
               backgroundColor: isFocus ? 'var(--accent-warning)' : 'var(--bg-tertiary)',
               color: isFocus ? '#000000' : 'var(--text-primary)',
               fontSize: '13px',
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
+              transition: 'background-color 0.15s ease, border-color 0.15s ease',
+              minHeight: '44px',
             }}
           >
             {isFocus ? '★ 已关注' : '关注此词'}

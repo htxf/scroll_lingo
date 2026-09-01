@@ -58,30 +58,34 @@ export function PitchAccentView({ reading, pitchAccent }: PitchAccentViewProps) 
   }, '');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
       {/* Pattern Badge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
         <span
           style={{
             padding: '2px 8px',
-            borderRadius: '4px',
-            backgroundColor: 'var(--bg-primary)',
+            borderRadius: 'var(--border-radius-xs)',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
             color: info.color,
             border: `1px solid ${info.color}`,
             fontSize: '11px',
-            fontWeight: 'bold',
+            fontWeight: 600,
           }}
         >
           {info.label}
         </span>
-        <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-          高低声调图谱
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+          声调音高曲线
         </span>
       </div>
 
       {/* Pitch Curve SVG Diagram */}
-      <div style={{ backgroundColor: 'var(--bg-primary)', padding: '8px', borderRadius: 'var(--border-radius-sm)', overflowX: 'auto' }}>
-        <svg width={svgWidth} height={36} style={{ overflow: 'visible' }}>
+      <div style={{ backgroundColor: 'var(--bg-primary)', padding: '10px 12px', borderRadius: 'var(--border-radius-sm)', border: '1px solid var(--border-color)', overflowX: 'auto' }}>
+        <svg width={svgWidth} height={40} style={{ overflow: 'visible' }}>
+          {/* Reference High/Low Dashed Guidelines */}
+          <line x1="0" y1={highY} x2={svgWidth} y2={highY} stroke="var(--border-color)" strokeDasharray="3 3" strokeWidth="1" />
+          <line x1="0" y1={lowY} x2={svgWidth} y2={lowY} stroke="var(--border-color)" strokeDasharray="3 3" strokeWidth="1" />
+
           {/* Pitch connecting line */}
           <path d={pathD} fill="none" stroke={info.color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
@@ -89,12 +93,14 @@ export function PitchAccentView({ reading, pitchAccent }: PitchAccentViewProps) 
           {points.map((pt, idx) => (
             <g key={idx}>
               <circle cx={pt.x} cy={pt.y} r="4" fill={info.color} />
+              <circle cx={pt.x} cy={pt.y} r="2" fill="#ffffff" />
               <text
                 x={pt.x}
-                y={34}
+                y={36}
                 textAnchor="middle"
-                fill="var(--text-secondary)"
-                fontSize="11"
+                fill="var(--text-primary)"
+                fontSize="12"
+                fontWeight="500"
                 fontFamily="var(--font-japanese)"
               >
                 {morae[idx]}

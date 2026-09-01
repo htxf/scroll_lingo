@@ -28,7 +28,7 @@ export function BottomNav({ activeTab, onTabChange, savedCount }: BottomNavProps
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        padding: '8px 0',
+        padding: '6px 12px 10px 12px',
         zIndex: 1000,
       }}
     >
@@ -39,20 +39,25 @@ export function BottomNav({ activeTab, onTabChange, savedCount }: BottomNavProps
             key={item.id}
             onClick={() => onTabChange(item.id)}
             style={{
-              background: 'none',
+              background: isActive ? 'rgba(29, 155, 240, 0.12)' : 'transparent',
               border: 'none',
+              borderRadius: 'var(--border-radius-md)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '2px',
               color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
               cursor: 'pointer',
               position: 'relative',
-              padding: '4px 16px',
+              padding: '6px 20px',
+              transition: 'background-color 0.15s ease, color 0.15s ease',
+              minWidth: '72px',
+              minHeight: '48px',
             }}
           >
-            <span style={{ fontSize: '18px' }}>{item.icon}</span>
-            <span style={{ fontSize: '11px', fontWeight: isActive ? 'bold' : 'normal' }}>
+            <span style={{ fontSize: '18px', lineHeight: '1' }}>{item.icon}</span>
+            <span style={{ fontSize: '11px', fontWeight: isActive ? 600 : 500, letterSpacing: '0.2px' }}>
               {item.label}
             </span>
 
@@ -60,14 +65,16 @@ export function BottomNav({ activeTab, onTabChange, savedCount }: BottomNavProps
               <span
                 style={{
                   position: 'absolute',
-                  top: '2px',
-                  right: '12px',
+                  top: '4px',
+                  right: '14px',
                   backgroundColor: 'var(--accent-primary)',
                   color: '#ffffff',
                   fontSize: '10px',
-                  fontWeight: 'bold',
-                  borderRadius: '10px',
+                  fontWeight: 700,
+                  borderRadius: 'var(--border-radius-full)',
                   padding: '1px 5px',
+                  lineHeight: '1.2',
+                  boxShadow: '0 0 6px rgba(29, 155, 240, 0.4)',
                 }}
               >
                 {item.badge}

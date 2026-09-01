@@ -55,5 +55,33 @@ rt {
   font-size: 0.65em;
   color: var(--ruby-color);
   user-select: none;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+/* Button Global Touch Physics */
+button {
+  font-family: inherit;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(0.97);
+  transition: transform 0.08s var(--ease-spring);
+}
+
+/* Modal Smooth Fade & Spring Slide Animation */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal {
+  animation: modalFadeIn 0.22s var(--ease-spring) forwards;
 }

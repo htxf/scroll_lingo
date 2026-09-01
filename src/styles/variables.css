@@ -1,15 +1,19 @@
-/* Design System Tokens for scroll_lingo */
+/* Design System Tokens for scroll_lingo (UI/UX Pro Max Standard) */
 :root {
-  /* Color Palette - Twitter/X Inspired Sleek Dark Theme */
+  /* 4-Layer Surface System */
   --bg-primary: #000000;
   --bg-secondary: #16181c;
   --bg-tertiary: #202327;
-  --bg-glass: rgba(22, 24, 28, 0.75);
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-active-glow: rgba(29, 155, 240, 0.18);
+  --bg-glass: rgba(22, 24, 28, 0.85);
 
+  /* Typography Colors */
   --text-primary: #f7f9f9;
   --text-secondary: #71767b;
   --text-muted: #53575b;
 
+  /* Brand Accents */
   --accent-primary: #1d9bf0;
   --accent-primary-hover: #1a8cd8;
   --accent-secondary: #00ba7c;
@@ -21,19 +25,36 @@
   --ruby-known-color: transparent;
   --pitch-line-color: #00ba7c;
 
+  /* 8pt Grid Spacing System */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
   /* Card & Border Utilities */
   --border-color: #2f3336;
+  --border-subtle: #202327;
+  --border-radius-xs: 4px;
   --border-radius-sm: 8px;
-  --border-radius-md: 16px;
-  --border-radius-lg: 24px;
+  --border-radius-md: 14px;
+  --border-radius-lg: 20px;
   --border-radius-full: 9999px;
 
   /* Typography */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-japanese: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
+  --font-japanese: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
 
   /* Shadow & Blur */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
-  --glass-blur: blur(12px);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 12px rgba(29, 155, 240, 0.25);
+  --glass-blur: blur(16px);
+
+  /* Motion & Transitions */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
 }

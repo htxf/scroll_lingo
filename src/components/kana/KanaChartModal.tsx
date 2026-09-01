@@ -143,10 +143,12 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 2500,
-        padding: '16px',
+        padding: 'var(--space-4)',
       }}
+      onClick={onClose}
     >
       <div
+        className="animate-modal"
         style={{
           width: '100%',
           maxWidth: '460px',
@@ -154,13 +156,14 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
           backgroundColor: 'var(--bg-secondary)',
           borderRadius: 'var(--border-radius-lg)',
           border: '1px solid var(--border-color)',
-          padding: '20px',
+          padding: 'var(--space-5)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '14px',
+          gap: 'var(--space-3)',
           boxShadow: 'var(--shadow-md)',
           overflowY: 'auto',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

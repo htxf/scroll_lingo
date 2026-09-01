@@ -1,4 +1,5 @@
 import { SavedWordEntity } from '../../db/database';
+import { useSpeech } from '../../hooks/useSpeech';
 
 interface BookmarksTabProps {
   savedWords: SavedWordEntity[];
@@ -7,110 +8,147 @@ interface BookmarksTabProps {
 }
 
 export function BookmarksTab({ savedWords, onRemoveWord, onMarkKnown }: BookmarksTabProps) {
+  const { speak, playingId } = useSpeech();
+
   if (savedWords.length === 0) {
     return (
       <div
         style={{
-          padding: '40px 20px',
+          padding: '48px 24px',
           textAlign: 'center',
           color: 'var(--text-secondary)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '12px',
+          gap: 'var(--space-3)',
           backgroundColor: 'var(--bg-secondary)',
           borderRadius: 'var(--border-radius-md)',
           border: '1px solid var(--border-color)',
+          marginTop: 'var(--space-2)',
         }}
       >
-        <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: '32px' }}>🔖</span>
+        <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
           生词书签库为空
         </div>
-        <p style={{ fontSize: '12px', maxWidth: '280px', lineHeight: '1.5' }}>
-          在推文或词卡中点击「收藏」或「设为重点关注」，生词将在此集中复习。
+        <p style={{ fontSize: '12px', maxWidth: '280px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+          在推文或词卡中收藏生词，将在此集中温故复习。
         </p>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-          生词书签库 ({savedWords.length})
+        <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+          生词本 ({savedWords.length})
         </h2>
-        <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-          In-Feed SRS 重现中
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+          In-Feed SRS 智能复现
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {savedWords.map((word) => (
-          <div
-            key={word.id}
-            style={{
-              backgroundColor: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--border-radius-md)',
-              padding: '14px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '18px', fontWeight: 'bold', fontFamily: 'var(--font-japanese)', color: 'var(--text-primary)' }}>
-                  {word.surface}
-                </span>
-                {word.reading && word.reading !== word.surface && (
-                  <span style={{ fontSize: '13px', color: 'var(--accent-primary)' }}>
-                    【{word.reading}】
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        {savedWords.map((word) => {
+          const isPlaying = playingId === `saved_${word.id}`;
+          return (
+            <div
+              key={word.id}
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--border-radius-md)',
+                padding: 'var(--space-4)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--space-2)',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 700, fontFamily: 'var(--font-japanese)', color: 'var(--text-primary)' }}>
+                    {word.surface}
                   </span>
-                )}
-                <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
-                  {word.level}
-                </span>
+                  {word.reading && word.reading !== word.surface && (
+                    <span style={{ fontSize: '13px', color: 'var(--accent-primary)', fontWeight: 600 }}>
+                      {word.reading}
+                    </span>
+                  )}
+                  <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: 'var(--border-radius-xs)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                    {word.level}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <button
+                    onClick={() => speak(word.surface, `saved_${word.id}`)}
+                    style={{
+                      background: isPlaying ? 'var(--accent-secondary)' : 'var(--bg-tertiary)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      color: isPlaying ? '#ffffff' : 'var(--text-secondary)',
+                    }}
+                    title="朗读发音"
+                  >
+                    🔊
+                  </button>
+
+                  <button
+                    onClick={() => onRemoveWord(word.id)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      padding: '4px',
+                    }}
+                    title="删除"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
 
-              <button
-                onClick={() => onRemoveWord(word.id)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '12px', cursor: 'pointer' }}
-                title="删除书签"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>
-              {word.definitionZh}
-            </div>
-
-            {word.contextSentence && (
-              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-japanese)', marginTop: '2px' }}>
-                语境: 「{word.contextSentence}」
+              <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500, lineHeight: '1.4' }}>
+                {word.definitionZh}
               </div>
-            )}
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
-              <button
-                onClick={() => onMarkKnown(word.lemma)}
-                style={{
-                  padding: '4px 10px',
-                  borderRadius: '12px',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: 'var(--bg-tertiary)',
-                  color: 'var(--accent-secondary)',
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                }}
-              >
-                标为已掌握
-              </button>
+              {word.contextSentence && (
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-japanese)', marginTop: '2px', lineHeight: '1.4' }}>
+                  语境: 「{word.contextSentence}」
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-1)' }}>
+                <button
+                  onClick={() => onMarkKnown(word.lemma)}
+                  style={{
+                    padding: '4px 12px',
+                    borderRadius: 'var(--border-radius-full)',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-tertiary)',
+                    color: 'var(--accent-secondary)',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ 标为已掌握
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
