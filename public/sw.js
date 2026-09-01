@@ -39,7 +39,28 @@ self.addEventListener('fetch', (event) => {
   // Never cache API or chrome-extension requests
   if (event.request.url.startsWith('chrome-extension://')) return;
 
-  event.respondWith(
+  const url = new URL(event.request.url);
+
+  // Audio files: Cache First with Network Fallback
+  if (url.pathname.startsWith('/audio/')) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(async (cache) => {
+        const cachedResponse = await cache.match(event.request);
+        if (cachedResponse) return cachedResponse;
+
+        try {
+          const networkResponse = await fetch(event.request);
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(event.request, networkResponse.clone());
+          }
+          return networkResponse;
+        } catch {
+          return new Response(null, { status: 404, statusText: 'Audio Not Found' });
+        }
+      })
+    );
+    return;
+  }
     fetch(event.request)
       .then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {

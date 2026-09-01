@@ -45,9 +45,10 @@ export const db = new ScrollLingoDatabase();
 
 /** Helper function to initialize database seed data */
 export async function initializeDatabase(): Promise<void> {
-  // Always update seed posts to include latest N0 posts
-  await db.posts.clear();
-  await db.posts.bulkAdd(INITIAL_SEED_POSTS);
+  const postCount = await db.posts.count();
+  if (postCount === 0) {
+    await db.posts.bulkAdd(INITIAL_SEED_POSTS);
+  }
 
   const existingState = await db.userState.get('current_user');
   if (!existingState) {

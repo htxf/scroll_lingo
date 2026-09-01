@@ -25,12 +25,25 @@ export function PostCard({
 }: PostCardProps) {
   // Default to pure native Twitter mode (clean, no clutter)
   const [isStudyMode, setIsStudyMode] = useState(false);
+  const [isContextExpanded, setIsContextExpanded] = useState(false);
 
   const handleAudioToggle = () => {
     if (isPlayingAudio && onStopText) {
       onStopText();
     } else {
       onSpeakPost(post);
+    }
+  };
+
+  const getPlatformLabel = (platform?: string) => {
+    switch (platform) {
+      case 'weibo': return '🔥 微博热搜';
+      case 'sspai': return '⚡️ 少数派';
+      case 'zhihu': return '💡 知乎热榜';
+      case 'hupu': return '🏀 虎扑热帖';
+      case 'bili': return '📺 B站热门';
+      case 'reddit': return '🌐 Reddit';
+      default: return '📰 实时热点';
     }
   };
 
@@ -107,6 +120,30 @@ export function PostCard({
         </button>
       </div>
 
+      {/* Lego Blocks for N0/N5 micro structures */}
+      {isStudyMode && post.legoBlocks && post.legoBlocks.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
+          {post.legoBlocks.map((block, idx) => (
+            <div
+              key={idx}
+              style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                borderLeft: `3px solid ${block.color}`,
+                padding: '3px 8px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{block.text}</span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>({block.labelZh})</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Chinese Translation */}
       {isStudyMode && (
         <div
@@ -118,6 +155,85 @@ export function PostCard({
           }}
         >
           {post.translationZh}
+        </div>
+      )}
+
+      {/* Dual-Layer Hot Topic Origin & Cultural Context Expander */}
+      {post.sourceContext && (
+        <div
+          style={{
+            backgroundColor: 'var(--bg-tertiary)',
+            borderRadius: 'var(--border-radius-sm)',
+            border: '1px dashed var(--border-color)',
+            overflow: 'hidden',
+          }}
+        >
+          <button
+            onClick={() => setIsContextExpanded((prev) => !prev)}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '11px',
+              color: 'var(--text-secondary)',
+              fontWeight: 500,
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>{getPlatformLabel(post.sourceContext.sourcePlatform)}</span>
+              <span style={{ color: 'var(--text-primary)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {post.sourceContext.originTitle}
+              </span>
+            </span>
+            <span>{isContextExpanded ? '收起 ▴' : '热点原文 ▾'}</span>
+          </button>
+
+          {isContextExpanded && (
+            <div
+              style={{
+                padding: '8px 12px 10px 12px',
+                borderTop: '1px solid var(--border-color)',
+                fontSize: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+                lineHeight: '1.5',
+              }}
+            >
+              {post.sourceContext.originSnippet && (
+                <div style={{ color: 'var(--text-primary)' }}>
+                  {post.sourceContext.originSnippet}
+                </div>
+              )}
+
+              {post.sourceContext.culturalNoteZh && (
+                <div style={{ fontSize: '11px', color: 'var(--accent-secondary)' }}>
+                  💡 语境解析：{post.sourceContext.culturalNoteZh}
+                </div>
+              )}
+
+              {post.sourceContext.originUrl && (
+                <a
+                  href={post.sourceContext.originUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    fontSize: '11px',
+                    color: 'var(--accent-primary)',
+                    textDecoration: 'none',
+                    alignSelf: 'flex-start',
+                  }}
+                >
+                  查看热点出处 ↗
+                </a>
+              )}
+            </div>
+          )}
         </div>
       )}
 

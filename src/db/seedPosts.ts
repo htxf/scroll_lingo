@@ -67,6 +67,18 @@ export const INITIAL_SEED_POSTS: Post[] = [
     likesCount: 520,
     repostsCount: 98,
     createdAt: '1m ago',
+    sourceContext: {
+      originTitle: '猫咪咖啡馆治愈系日常登上微博与知乎热搜',
+      originSnippet: '周末猫咖探店，三花猫咪主动靠近讨要零食，治愈无数年轻人一周的疲惫。',
+      sourcePlatform: 'weibo',
+      originUrl: 'https://weibo.com',
+      culturalNoteZh: '在日本社交媒体上，“猫咪（ねこ）”与“可爱（可愛い）”是最基础且互动量极高的万能治愈高频词。',
+    },
+    legoBlocks: [
+      { text: 'あ！', color: '#ff7b72', labelZh: '感叹声' },
+      { text: 'ねこ！', color: '#79c0ff', labelZh: '主语·猫咪' },
+      { text: '可愛い！✨', color: '#7ee787', labelZh: '状态·好可爱' },
+    ],
     tokens: [
       { id: 't_a', surface: 'あ', reading: 'あ', romaji: 'a', lemma: 'あ', pos: '感叹词', level: 'N0', definitionZh: '啊 (感叹声)', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ex_a', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
@@ -174,6 +186,18 @@ export const INITIAL_SEED_POSTS: Post[] = [
     likesCount: 310,
     repostsCount: 45,
     createdAt: '3m ago',
+    sourceContext: {
+      originTitle: '2026 世界咖啡冲煮大赛热议：晨间第一杯好咖啡带来的专注力',
+      originSnippet: '知乎与少数派咖啡话题热议：坚持晨间手冲咖啡如何改变生活节奏与专注度。',
+      sourcePlatform: 'zhihu',
+      originUrl: 'https://zhihu.com',
+      culturalNoteZh: '在日语咖啡文化中，“いい日（美好的一天）”常与手冲咖啡香气搭配，构成元气满满的早间问候。',
+    },
+    legoBlocks: [
+      { text: 'おはよう！☕️', color: '#ff7b72', labelZh: '问候·早安' },
+      { text: '今日も', color: '#79c0ff', labelZh: '时间·今天也' },
+      { text: 'いい日！', color: '#7ee787', labelZh: '祝愿·美好一天' },
+    ],
     tokens: [
       { id: 't_ohayou', surface: 'おはよう', reading: 'おはよう', romaji: 'ohayou', lemma: 'おはよう', pos: '感叹词', level: 'N0', definitionZh: '早安/你好', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
       { id: 't_ex_o', surface: '！☕️', reading: '', romaji: '', lemma: '！☕️', pos: '标点', level: 'N0', definitionZh: '表情' },
@@ -359,6 +383,18 @@ export const INITIAL_SEED_POSTS: Post[] = [
     likesCount: 450,
     repostsCount: 88,
     createdAt: '15m ago',
+    sourceContext: {
+      originTitle: 'TypeScript 5.8 发布与 CI/CD 自动化构建热议：零 Bug 上线的快乐',
+      originSnippet: '少数派与掘金热帖：通过强类型检查与自动化测试，实现单周 0 线上故障。',
+      sourcePlatform: 'sspai',
+      originUrl: 'https://sspai.com',
+      culturalNoteZh: '在日语极客圈，“バグなし（无Bug）”是程序员下班前最幸福的口头禅。',
+    },
+    legoBlocks: [
+      { text: 'はい！OK！', color: '#ff7b72', labelZh: '状态·没问题' },
+      { text: 'バグ', color: '#79c0ff', labelZh: '对象·Bug' },
+      { text: 'なし！🎉💪', color: '#7ee787', labelZh: '判定·全消灭' },
+    ],
     tokens: [
       { id: 't_hai', surface: 'はい', reading: 'はい', romaji: 'hai', lemma: 'はい', pos: '感叹词', level: 'N0', definitionZh: '好的/是的', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ex_hai', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
