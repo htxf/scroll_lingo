@@ -1,9 +1,19 @@
-const CACHE_NAME = 'scroll-lingo-v7';
+const CACHE_NAME = 'scroll-lingo-v8';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
+  '/audio/post_life_01.mp3',
+  '/audio/post_life_02_text.mp3',
+  '/audio/post_life_03.mp3',
+  '/audio/post_coffee_01_text.mp3',
+  '/audio/post_coffee_02.mp3',
+  '/audio/post_tech_01_text.mp3',
+  '/audio/post_tech_02_text.mp3',
+  '/audio/post_food_01.mp3',
+  '/audio/post_sports_01.mp3',
+  '/audio/post_game_01.mp3',
 ];
 
 // Install Event - Pre-cache shell assets & skip waiting immediately

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Post, Token, Persona, UserKnowledgeState } from '../../types';
 import { PersonaHeader } from './PersonaHeader';
 import { ActionButtons } from './ActionButtons';
@@ -12,6 +12,7 @@ interface PostCardProps {
   onStopText?: () => void;
   isPlayingAudio?: boolean;
   onBookmarkPost?: (post: Post) => void;
+  onMarkMastered?: (post: Post) => void;
   selectedTokenId?: string | null;
   onPersonaClick?: (persona: Persona) => void;
 }
@@ -24,11 +25,69 @@ export function PostCard({
   onStopText,
   isPlayingAudio = false,
   onBookmarkPost,
+  onMarkMastered,
   selectedTokenId,
   onPersonaClick,
 }: PostCardProps) {
   // Default to pure native Twitter mode (clean, no clutter)
   const [isStudyMode, setIsStudyMode] = useState(false);
+
+  // Swipe Gesture Engine (Left -> Bookmark, Right -> Master)
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const isHorizontalSwipe = useRef<boolean | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    isHorizontalSwipe.current = null;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const currentX = touch.clientX;
+    const currentY = touch.clientY;
+    const deltaX = currentX - touchStartX.current;
+    const deltaY = currentY - touchStartY.current;
+
+    // Detect gesture direction on first significant movement
+    if (isHorizontalSwipe.current === null) {
+      if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        isHorizontalSwipe.current = true;
+      } else if (Math.abs(deltaY) > 10) {
+        isHorizontalSwipe.current = false;
+      }
+    }
+
+    if (isHorizontalSwipe.current) {
+      // Apply elastic damping
+      const damping = 0.45;
+      const clampedOffset = Math.max(-90, Math.min(90, deltaX * damping));
+      setDragOffset(clampedOffset);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isHorizontalSwipe.current) {
+      if (dragOffset <= -45) {
+        // Swiped Left -> Bookmark
+        onBookmarkPost?.(post);
+      } else if (dragOffset >= 45) {
+        // Swiped Right -> Master
+        onMarkMastered?.(post);
+      }
+    }
+    setIsDragging(false);
+    setDragOffset(0);
+    isHorizontalSwipe.current = null;
+  };
 
   const handleAudioToggle = () => {
     if (isPlayingAudio && onStopText) {
@@ -39,26 +98,69 @@ export function PostCard({
   };
 
   return (
-    <article
-      style={{
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--border-color)',
-        borderRadius: 'var(--border-radius-md)',
-        padding: 'var(--space-4)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-3)',
-        boxShadow: 'var(--shadow-sm)',
-      }}
-    >
-      {/* Header Block: Persona Identity & Native Topic Badge */}
-      <PersonaHeader
-        persona={post.persona}
-        createdAt={post.createdAt}
-        level={post.level}
-        sourcePlatform={post.sourceContext?.sourcePlatform}
-        onPersonaClick={onPersonaClick}
-      />
+    <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 'var(--border-radius-md)' }}>
+      {/* Background Gesture Action Cue */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor:
+            dragOffset < -10
+              ? 'rgba(244, 33, 46, 0.2)' // Left Swipe -> Red Bookmark
+              : dragOffset > 10
+              ? 'rgba(0, 186, 124, 0.2)' // Right Swipe -> Green Master
+              : 'transparent',
+          display: 'flex',
+          justifyContent: dragOffset < 0 ? 'flex-end' : 'flex-start',
+          alignItems: 'center',
+          padding: '0 24px',
+          borderRadius: 'var(--border-radius-md)',
+          transition: isDragging ? 'none' : 'background-color 0.2s ease',
+        }}
+      >
+        {dragOffset < -20 && (
+          <span style={{ fontSize: '20px', color: 'var(--accent-danger)', fontWeight: 700 }}>
+            ❤️ 收藏
+          </span>
+        )}
+        {dragOffset > 20 && (
+          <span style={{ fontSize: '20px', color: 'var(--accent-secondary)', fontWeight: 700 }}>
+            ✓ 掌握
+          </span>
+        )}
+      </div>
+
+      {/* Main Card Surface */}
+      <article
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        style={{
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--border-radius-md)',
+          padding: 'var(--space-4)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-3)',
+          boxShadow: 'var(--shadow-sm)',
+          transform: `translateX(${dragOffset}px)`,
+          transition: isDragging ? 'none' : 'transform 0.25s var(--ease-spring)',
+          willChange: 'transform',
+        }}
+      >
+        {/* Header Block: Persona Identity & Native Topic Badge */}
+        <PersonaHeader
+          persona={post.persona}
+          createdAt={post.createdAt}
+          level={post.level}
+          sourcePlatform={post.sourceContext?.sourcePlatform}
+          onPersonaClick={onPersonaClick}
+        />
 
       {/* Subtle Hot Topic Context Anchor (Gives N0 beginners immediate real-world meaning) */}
       {post.sourceContext && (
@@ -167,5 +269,6 @@ export function PostCard({
         onBookmarkPost={() => onBookmarkPost?.(post)}
       />
     </article>
+  </div>
   );
 }

@@ -224,6 +224,46 @@ export function App() {
     await db.userState.put(entityUpdate);
   };
 
+  const handleMarkPostMastered = async (post: Post) => {
+    if (!userState) return;
+
+    const newKnown = new Set(userState.explicitKnownWords);
+    const newFocus = new Set(userState.explicitFocusWords);
+    let addedCount = 0;
+
+    for (const token of post.tokens) {
+      if (token.lemma && token.pos !== '标点') {
+        newKnown.add(token.lemma);
+        newFocus.delete(token.lemma);
+        addedCount++;
+      }
+    }
+
+    const updatedState: UserKnowledgeState = {
+      ...userState,
+      explicitKnownWords: newKnown,
+      explicitFocusWords: newFocus,
+      totalWordsMastered: newKnown.size,
+    };
+
+    setUserState(updatedState);
+
+    const entityUpdate: UserStateEntity = {
+      id: 'current_user',
+      deviceUuid: updatedState.deviceUuid,
+      baselineLevel: updatedState.baselineLevel,
+      explicitKnownWords: Array.from(newKnown),
+      explicitFocusWords: Array.from(newFocus),
+      interestCategories: updatedState.interestCategories,
+      totalPostsRead: updatedState.totalPostsRead,
+      totalWordsMastered: updatedState.totalWordsMastered,
+      lastActiveTimestamp: Date.now(),
+      hasCompletedOnboarding: true,
+    };
+    await db.userState.put(entityUpdate);
+    triggerToast(`✓ 已将本帖 ${addedCount} 个词汇标记为掌握`);
+  };
+
   const handleToggleFocus = async (lemma: string) => {
     if (!userState) return;
 
@@ -390,6 +430,7 @@ export function App() {
               onStopText={stop}
               isPlayingAudio={playingId === post.id}
               onBookmarkPost={handleBookmarkPost}
+              onMarkMastered={handleMarkPostMastered}
               selectedTokenId={selectedToken?.id}
               onPersonaClick={(p) => setSelectedPersona(p)}
             />

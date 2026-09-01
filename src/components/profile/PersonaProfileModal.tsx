@@ -1,4 +1,5 @@
-﻿import { Persona } from '../../types';
+import { useState, useRef } from 'react';
+import { Persona } from '../../types';
 
 interface PersonaProfileModalProps {
   persona: Persona | null;
@@ -6,7 +7,35 @@ interface PersonaProfileModalProps {
 }
 
 export function PersonaProfileModal({ persona, onClose }: PersonaProfileModalProps) {
+  // Drag down to dismiss gesture state
+  const [dragY, setDragY] = useState(0);
+  const touchStartY = useRef(0);
+
   if (!persona) return null;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (touch) {
+      touchStartY.current = touch.clientY;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (touch) {
+      const deltaY = touch.clientY - touchStartY.current;
+      if (deltaY > 0) {
+        setDragY(deltaY * 0.6); // Damped downward pull
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (dragY > 70) {
+      onClose();
+    }
+    setDragY(0);
+  };
 
   return (
     <div
@@ -28,20 +57,30 @@ export function PersonaProfileModal({ persona, onClose }: PersonaProfileModalPro
     >
       <div
         className="animate-modal"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
           width: '100%',
           maxWidth: '400px',
           backgroundColor: 'var(--bg-secondary)',
           borderRadius: 'var(--border-radius-lg)',
           border: '1px solid var(--border-color)',
-          padding: 'var(--space-5)',
+          padding: 'var(--space-4) var(--space-5) var(--space-5) var(--space-5)',
           display: 'flex',
           flexDirection: 'column',
           gap: 'var(--space-4)',
           boxShadow: 'var(--shadow-md)',
+          transform: `translateY(${dragY}px)`,
+          transition: dragY === 0 ? 'transform 0.2s var(--ease-spring)' : 'none',
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* iOS-style Top Drag Handle */}
+        <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: '4px' }}>
+          <div style={{ width: '36px', height: '4px', borderRadius: '2px', backgroundColor: 'var(--text-muted)', opacity: 0.6 }} />
+        </div>
+
         {/* Top Header & Avatar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <img
