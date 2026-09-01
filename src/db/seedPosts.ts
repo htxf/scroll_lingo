@@ -467,6 +467,18 @@ export const INITIAL_SEED_POSTS: Post[] = [
     likesCount: 920,
     repostsCount: 310,
     createdAt: '20m ago',
+    sourceContext: {
+      originTitle: '欧冠焦点战下半场补时绝杀：主场球迷见证逆转奇迹',
+      originSnippet: '虎扑足球热帖：第94分钟绝杀进球引爆全场，主教练激情拥抱每一位球员。',
+      sourcePlatform: 'hupu',
+      originUrl: 'https://hupu.com',
+      culturalNoteZh: '在日语体育直播和社交讨论中，“最高（さいこう）”是获胜时使用频率最高的极度赞美词。',
+    },
+    legoBlocks: [
+      { text: 'ゴール！', color: '#ff7b72', labelZh: '事件·进球' },
+      { text: '勝った！', color: '#79c0ff', labelZh: '结果·赢了' },
+      { text: '最高！⚽️🔥', color: '#7ee787', labelZh: '情绪·最棒' },
+    ],
     tokens: [
       { id: 't_gooru', surface: 'ゴール', reading: 'ゴール', romaji: 'gooru', lemma: 'ゴール', pos: '名词', level: 'N0', definitionZh: '进球/得分', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ex_gooru', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
