@@ -51,23 +51,26 @@ export function ActionButtons({
         <span>{isBookmarked ? '已收藏' : '收藏'}</span>
       </button>
 
-      {/* Right Tool Control: Clean Mode Toggle (解析 vs 纯享) */}
+      {/* Right Tool Control: Clean Mode Toggle */}
       <button
         onClick={onToggleStudyMode}
         style={{
-          padding: '3px 10px',
-          borderRadius: '12px',
-          border: '1px solid var(--border-color)',
-          backgroundColor: isStudyMode ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-          color: isStudyMode ? '#ffffff' : 'var(--text-secondary)',
+          padding: '4px 12px',
+          borderRadius: 'var(--border-radius-full)',
+          border: isStudyMode ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
+          backgroundColor: isStudyMode ? 'rgba(29, 155, 240, 0.15)' : 'var(--bg-tertiary)',
+          color: isStudyMode ? 'var(--accent-primary)' : 'var(--text-secondary)',
           fontSize: '11px',
-          fontWeight: 500,
+          fontWeight: 600,
           cursor: 'pointer',
           transition: 'all 0.15s ease',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
         }}
-        title="切换推文纯享模式 / 深度解析模式"
+        title="切换推文纯净阅读 / 拆词学习模式"
       >
-        {isStudyMode ? '纯享' : '解析'}
+        <span>{isStudyMode ? '📖 纯享' : '👓 拆词'}</span>
       </button>
     </div>
   );

@@ -64,12 +64,11 @@ export function InteractiveCard({
     pitchNotation: token.surface.length <= 2 ? '1' : '0',
   };
 
-  // Dynamically derive AI breakdown for the current token (0ms instant, no stale state)
-  const aiBreakdownText =
-    `【AI 语法解构与语境】\n` +
-    `• 核心词性：${token.pos || '基础词汇'} (${token.level === 'N0' ? 'N0 萌芽' : `JLPT ${token.level}`})\n` +
-    `• 释义延伸：${token.definitionZh || '常用基础表达'}\n` +
-    `• 语感提示：日本日常高频短语，无需死记复杂变形，顺口跟读即可自然掌握。`;
+  // Clean concise grammar & lemma breakdown
+  const grammarNote =
+    token.lemma && token.lemma !== token.surface
+      ? `• 原形：${token.lemma} (${token.pos || '常用词'})`
+      : `• 词性：${token.pos || '常用词'}`;
 
   return (
     <div
@@ -259,21 +258,19 @@ export function InteractiveCard({
           </button>
         </div>
 
-        {/* AI Deep Breakdown Section (Default visible, instantly responsive to current token) */}
+        {/* Concise Grammar & Context Hint */}
         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
           <div
             style={{
               backgroundColor: 'var(--bg-primary)',
               border: '1px solid var(--border-color)',
-              padding: '12px 14px',
+              padding: '8px 12px',
               borderRadius: 'var(--border-radius-sm)',
-              fontSize: '12px',
-              whiteSpace: 'pre-wrap',
-              lineHeight: '1.6',
-              color: 'var(--text-primary)',
+              fontSize: '11px',
+              color: 'var(--text-secondary)',
             }}
           >
-            {aiBreakdownText}
+            {grammarNote}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Post, Persona } from '../types';
+﻿import { Post, Persona } from '../types';
 
 export const INITIAL_PERSONAS: Record<string, Persona> = {
   cat_tama: {
@@ -53,7 +53,7 @@ export const INITIAL_PERSONAS: Record<string, Persona> = {
 
 export const INITIAL_SEED_POSTS: Post[] = [
   // ==========================================
-  // 1. 🐱 日常生活与萌宠伴学 (Lifestyle & Cats)
+  // 1. 🐱 日常生活与萌宠热搜 (Lifestyle & Weibo Trends)
   // ==========================================
   {
     id: 'post_life_01',
@@ -68,17 +68,10 @@ export const INITIAL_SEED_POSTS: Post[] = [
     repostsCount: 98,
     createdAt: '1m ago',
     sourceContext: {
-      originTitle: '猫咪咖啡馆治愈系日常登上微博与知乎热搜',
-      originSnippet: '周末猫咖探店，三花猫咪主动靠近讨要零食，治愈无数年轻人一周的疲惫。',
+      originTitle: '猫咖治愈日常登上周末热搜榜首',
+      originSnippet: '周末猫咖探店，三花小猫主动讨要零食，治愈全场年轻人的疲惫。',
       sourcePlatform: 'weibo',
-      originUrl: 'https://weibo.com',
-      culturalNoteZh: '在日本社交媒体上，“猫咪（ねこ）”与“可爱（可愛い）”是最基础且互动量极高的万能治愈高频词。',
     },
-    legoBlocks: [
-      { text: 'あ！', color: '#ff7b72', labelZh: '感叹声' },
-      { text: 'ねこ！', color: '#79c0ff', labelZh: '主语·猫咪' },
-      { text: '可愛い！✨', color: '#7ee787', labelZh: '状态·好可爱' },
-    ],
     tokens: [
       { id: 't_a', surface: 'あ', reading: 'あ', romaji: 'a', lemma: 'あ', pos: '感叹词', level: 'N0', definitionZh: '啊 (感叹声)', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ex_a', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
@@ -93,13 +86,18 @@ export const INITIAL_SEED_POSTS: Post[] = [
     id: 'post_life_02_text',
     persona: INITIAL_PERSONAS.cat_tama!,
     contentJa: 'これ、なに？たのしい！(≧∇≦)',
-    translationZh: '这个，是什么？好开心！',
+    translationZh: '这个是什么？好开心！',
     audioUrl: '/audio/post_life_02_text.mp3',
     category: 'lifestyle',
     level: 'N0',
     likesCount: 290,
     repostsCount: 30,
     createdAt: '5m ago',
+    sourceContext: {
+      originTitle: '网红新型逗猫棒玩具走红社交平台',
+      originSnippet: '新款智能羽毛逗猫棒开箱，猫咪好奇扑腾玩得不亦乐乎。',
+      sourcePlatform: 'weibo',
+    },
     tokens: [
       { id: 't_kore_6', surface: 'これ', reading: 'これ', romaji: 'kore', lemma: 'これ', pos: '代词', level: 'N0', definitionZh: '这个', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
       { id: 't_comma_6', surface: '、', reading: '', romaji: '', lemma: '、', pos: '标点', level: 'N0', definitionZh: '逗号' },
@@ -113,67 +111,32 @@ export const INITIAL_SEED_POSTS: Post[] = [
   {
     id: 'post_life_03',
     persona: INITIAL_PERSONAS.cat_tama!,
-    contentJa: 'おやすみ。またあした。🌙💤',
+    contentJa: 'おやすみ。またあした。🌙✨',
     translationZh: '晚安。明天见。',
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&auto=format&fit=crop&q=80',
     audioUrl: '/audio/post_life_03.mp3',
     category: 'lifestyle',
     level: 'N0',
-    likesCount: 640,
-    repostsCount: 42,
+    likesCount: 680,
+    repostsCount: 52,
     createdAt: '12m ago',
+    sourceContext: {
+      originTitle: '知乎热榜：早睡早起打卡对精力的惊人提升',
+      originSnippet: '坚持 23 点前入睡与睡前断网，告别熬夜内耗与晨间疲倦。',
+      sourcePlatform: 'zhihu',
+    },
     tokens: [
-      { id: 't_oyasumi', surface: 'おやすみ', reading: 'おやすみ', romaji: 'oyasumi', lemma: 'お休み', pos: '感叹词', level: 'N0', definitionZh: '晚安', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
+      { id: 't_oyasumi', surface: 'おやすみ', reading: 'おやすみ', romaji: 'oyasumi', lemma: 'おやすみ', pos: '感叹词', level: 'N0', definitionZh: '晚安', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
       { id: 't_period_o', surface: '。', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N0', definitionZh: '句号' },
-      { id: 't_mata', surface: 'また', reading: 'また', romaji: 'mata', lemma: 'また', pos: '副词', level: 'N0', definitionZh: '再次/又', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
+      { id: 't_mata', surface: 'また', reading: 'また', romaji: 'mata', lemma: 'また', pos: '副词', level: 'N0', definitionZh: '再/又', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ashita', surface: 'あした', reading: 'あした', romaji: 'ashita', lemma: '明日', pos: '名词', level: 'N0', definitionZh: '明天', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_period_m', surface: '。🌙💤', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_life_04',
-    persona: INITIAL_PERSONAS.cat_tama!,
-    contentJa: 'いぬ！おおきい！すごい！🐶',
-    translationZh: '是狗狗！好大一只！好厉害！🐶',
-    imageUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80',
-    audioUrl: '/audio/post_life_04.mp3',
-    category: 'lifestyle',
-    level: 'N0',
-    likesCount: 410,
-    repostsCount: 35,
-    createdAt: '22m ago',
-    tokens: [
-      { id: 't_inu', surface: 'いぬ', reading: 'いぬ', romaji: 'inu', lemma: '犬', pos: '名词', level: 'N0', definitionZh: '狗', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_inu', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_ookii', surface: 'おおきい', reading: 'おおきい', romaji: 'ookii', lemma: '大きい', pos: '描述词', level: 'N0', definitionZh: '巨大的/大', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_ex_ookii', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_sugoi', surface: 'すごい', reading: 'すごい', romaji: 'sugoi', lemma: '凄い', pos: '描述词', level: 'N0', definitionZh: '厉害/棒', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_sugoi', surface: '！🐶', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_life_05_text',
-    persona: INITIAL_PERSONAS.cat_tama!,
-    contentJa: 'こんにちは！元気？( •̀ ω •́ )✧',
-    translationZh: '你好！精神好吗？',
-    audioUrl: '/audio/post_life_05_text.mp3',
-    category: 'lifestyle',
-    level: 'N0',
-    likesCount: 380,
-    repostsCount: 22,
-    createdAt: '35m ago',
-    tokens: [
-      { id: 't_konnichiwa', surface: 'こんにちは', reading: 'こんにちは', romaji: 'konnichiwa', lemma: 'こんにちは', pos: '感叹词', level: 'N0', definitionZh: '你好/白天问候', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_ex_kon', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_genki', surface: '元気', reading: 'げんき', romaji: 'genki', lemma: '元気', pos: '名词', level: 'N0', definitionZh: '精神/健康', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_ques_genki', surface: '？( •̀ ω •́ )✧', reading: '', romaji: '', lemma: '？', pos: '标点', level: 'N0', definitionZh: '表情' },
+      { id: 't_period_ash', surface: '。🌙✨', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N0', definitionZh: '表情' },
     ],
     comments: [],
   },
 
   // ==========================================
-  // 2. ☕ 咖啡与生活美学 (Coffee & Cafe)
+  // 2. ☕ 咖啡与手冲美学 (Coffee & Lifestyle)
   // ==========================================
   {
     id: 'post_coffee_01_text',
@@ -187,17 +150,10 @@ export const INITIAL_SEED_POSTS: Post[] = [
     repostsCount: 45,
     createdAt: '3m ago',
     sourceContext: {
-      originTitle: '2026 世界咖啡冲煮大赛热议：晨间第一杯好咖啡带来的专注力',
-      originSnippet: '知乎与少数派咖啡话题热议：坚持晨间手冲咖啡如何改变生活节奏与专注度。',
+      originTitle: '晨间手冲咖啡仪式感引发热议',
+      originSnippet: '知乎话题：早晨用 5 分钟手冲一杯好咖啡，开启元气满满专注的一天。',
       sourcePlatform: 'zhihu',
-      originUrl: 'https://zhihu.com',
-      culturalNoteZh: '在日语咖啡文化中，“いい日（美好的一天）”常与手冲咖啡香气搭配，构成元气满满的早间问候。',
     },
-    legoBlocks: [
-      { text: 'おはよう！☕️', color: '#ff7b72', labelZh: '问候·早安' },
-      { text: '今日も', color: '#79c0ff', labelZh: '时间·今天也' },
-      { text: 'いい日！', color: '#7ee787', labelZh: '祝愿·美好一天' },
-    ],
     tokens: [
       { id: 't_ohayou', surface: 'おはよう', reading: 'おはよう', romaji: 'ohayou', lemma: 'おはよう', pos: '感叹词', level: 'N0', definitionZh: '早安/你好', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
       { id: 't_ex_o', surface: '！☕️', reading: '', romaji: '', lemma: '！☕️', pos: '标点', level: 'N0', definitionZh: '表情' },
@@ -221,6 +177,11 @@ export const INITIAL_SEED_POSTS: Post[] = [
     likesCount: 510,
     repostsCount: 65,
     createdAt: '18m ago',
+    sourceContext: {
+      originTitle: '2026 世界咖啡冲煮大赛精选豆单公布',
+      originSnippet: '埃塞俄比亚浅烘花香柑橘风味领跑今年热门手冲赛道。',
+      sourcePlatform: 'sspai',
+    },
     tokens: [
       { id: 't_asa_c', surface: '朝', reading: 'あさ', romaji: 'asa', lemma: '朝', pos: '名词', level: 'N0', definitionZh: '早晨', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_no_c', surface: 'の', reading: 'の', romaji: 'no', lemma: 'の', pos: '助词', level: 'N0', definitionZh: '的', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
@@ -232,145 +193,9 @@ export const INITIAL_SEED_POSTS: Post[] = [
     ],
     comments: [],
   },
-  {
-    id: 'post_coffee_03_text',
-    persona: INITIAL_PERSONAS.coffee_ken!,
-    contentJa: '水！つめたい！おいしい！💧',
-    translationZh: '水！冰冰凉凉！好喝！',
-    audioUrl: '/audio/post_coffee_03_text.mp3',
-    category: 'coffee',
-    level: 'N0',
-    likesCount: 220,
-    repostsCount: 15,
-    createdAt: '28m ago',
-    tokens: [
-      { id: 't_mizu', surface: '水', reading: 'みず', romaji: 'mizu', lemma: '水', pos: '名词', level: 'N0', definitionZh: '水', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_ex_mizu', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_tsumetai', surface: 'つめたい', reading: 'つめたい', romaji: 'tsumetai', lemma: '冷たい', pos: '描述词', level: 'N0', definitionZh: '冰凉的/冷', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_ex_tsu', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_oishii_w', surface: 'おいしい', reading: 'おいしい', romaji: 'oishii', lemma: '美味しい', pos: '描述词', level: 'N0', definitionZh: '好喝/美味', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_ex_oi_w', surface: '！💧', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_coffee_04',
-    persona: INITIAL_PERSONAS.coffee_ken!,
-    contentJa: 'カフェで本を読む。静か。📖',
-    translationZh: '在咖啡店看书。很安静。',
-    imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600&auto=format&fit=crop&q=80',
-    audioUrl: '/audio/post_coffee_04.mp3',
-    category: 'coffee',
-    level: 'N5',
-    likesCount: 460,
-    repostsCount: 52,
-    createdAt: '42m ago',
-    tokens: [
-      { id: 't_kafe', surface: 'カフェ', reading: 'カフェ', romaji: 'kafe', lemma: 'カフェ', pos: '名词', level: 'N5', definitionZh: '咖啡店', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_de', surface: 'で', reading: 'で', romaji: 'de', lemma: 'で', pos: '助词', level: 'N5', definitionZh: '在 (场所)', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_hon', surface: '本', reading: 'ほん', romaji: 'hon', lemma: '本', pos: '名词', level: 'N5', definitionZh: '书本', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_wo', surface: 'を', reading: 'を', romaji: 'wo', lemma: 'を', pos: '助词', level: 'N5', definitionZh: '动作对象', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_yomu', surface: '読む', reading: 'よむ', romaji: 'yomu', lemma: '読む', pos: '动作词', level: 'N5', definitionZh: '阅读', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_period_y', surface: '。', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '句号' },
-      { id: 't_shizuka', surface: '静か', reading: 'しずか', romaji: 'shizuka', lemma: '静か', pos: '描述词', level: 'N5', definitionZh: '安静', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_period_s', surface: '。📖', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
 
   // ==========================================
-  // 3. 🍣 美食料理与探店 (Food & Izakaya)
-  // ==========================================
-  {
-    id: 'post_food_01',
-    persona: INITIAL_PERSONAS.food_mei!,
-    contentJa: '寿司！おいしい！ありがとう！🍣',
-    translationZh: '寿司！好吃！谢谢！🍣',
-    imageUrl: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop&q=80',
-    audioUrl: '/audio/post_food_01.mp3',
-    category: 'food',
-    level: 'N0',
-    likesCount: 680,
-    repostsCount: 120,
-    createdAt: '8m ago',
-    tokens: [
-      { id: 't_sushi', surface: '寿司', reading: 'すし', romaji: 'sushi', lemma: '寿司', pos: '名词', level: 'N0', definitionZh: '寿司', pitchAccent: { pattern: 'heiban', pitchNotation: '2' } },
-      { id: 't_ex_sushi', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_oishii', surface: 'おいしい', reading: 'おいしい', romaji: 'oishii', lemma: 'おいしい', pos: '描述词', level: 'N0', definitionZh: '美味/好吃', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_ex_oishii', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_arigatou', surface: 'ありがとう', reading: 'ありがとう', romaji: 'arigatou', lemma: 'ありがとう', pos: '感叹词', level: 'N0', definitionZh: '谢谢', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_ari', surface: '！🍣', reading: '', romaji: '', lemma: '！🍣', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_food_02',
-    persona: INITIAL_PERSONAS.food_mei!,
-    contentJa: 'ラーメン！熱い！うまい！🍜',
-    translationZh: '拉面！热气腾腾！好香！🍜',
-    imageUrl: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80',
-    audioUrl: '/audio/post_food_02.mp3',
-    category: 'food',
-    level: 'N0',
-    likesCount: 840,
-    repostsCount: 160,
-    createdAt: '16m ago',
-    tokens: [
-      { id: 't_raamen', surface: 'ラーメン', reading: 'ラーメン', romaji: 'raamen', lemma: 'ラーメン', pos: '名词', level: 'N0', definitionZh: '拉面', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_ex_raa', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_atsui', surface: '熱い', reading: 'あつい', romaji: 'atsui', lemma: '熱い', pos: '描述词', level: 'N0', definitionZh: '烫的/热', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_atsui', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_umai', surface: 'うまい', reading: 'うまい', romaji: 'umai', lemma: 'うまい', pos: '描述词', level: 'N0', definitionZh: '美味/好吃', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_umai', surface: '！🍜', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_food_03_text',
-    persona: INITIAL_PERSONAS.food_mei!,
-    contentJa: 'おなかすいた！ご飯食べよう！🍚🥢',
-    translationZh: '肚子饿了！去吃饭吧！',
-    audioUrl: '/audio/post_food_03_text.mp3',
-    category: 'food',
-    level: 'N0',
-    likesCount: 390,
-    repostsCount: 40,
-    createdAt: '30m ago',
-    tokens: [
-      { id: 't_onaka', surface: 'おなか', reading: 'おなか', romaji: 'onaka', lemma: 'お腹', pos: '名词', level: 'N0', definitionZh: '肚子', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_suita', surface: 'すいた', reading: 'すいた', romaji: 'suita', lemma: '空く', pos: '描述词', level: 'N0', definitionZh: '空了/饿了', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_ona', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_gohan', surface: 'ご飯', reading: 'ごはん', romaji: 'gohan', lemma: 'ご飯', pos: '名词', level: 'N0', definitionZh: '饭/餐', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_tabeyou', surface: '食べよう', reading: 'たべよう', romaji: 'tabeyou', lemma: '食べる', pos: '动作词', level: 'N0', definitionZh: '吃吧 (提议)', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_ex_tabe', surface: '！🍚🥢', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_food_04',
-    persona: INITIAL_PERSONAS.food_mei!,
-    contentJa: '抹茶アイス。甘くて冷たい。🍦🍵',
-    translationZh: '抹茶冰淇淋。又甜又冰。',
-    imageUrl: 'https://images.unsplash.com/photo-1505394033641-40c6ad1178d7?w=600&auto=format&fit=crop&q=80',
-    audioUrl: '/audio/post_food_04.mp3',
-    category: 'food',
-    level: 'N5',
-    likesCount: 570,
-    repostsCount: 88,
-    createdAt: '50m ago',
-    tokens: [
-      { id: 't_matcha', surface: '抹茶', reading: 'まっちゃ', romaji: 'matcha', lemma: '抹茶', pos: '名词', level: 'N5', definitionZh: '抹茶', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_aisu', surface: 'アイス', reading: 'アイス', romaji: 'aisu', lemma: 'アイス', pos: '名词', level: 'N5', definitionZh: '冰淇淋', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_period_ai', surface: '。', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '句号' },
-      { id: 't_amakute', surface: '甘くて', reading: 'あまくて', romaji: 'amakute', lemma: '甘い', pos: '描述词', level: 'N5', definitionZh: '甜的 (连接型)', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_tsume_5', surface: '冷たい', reading: 'つめたい', romaji: 'tsumetai', lemma: '冷たい', pos: '描述词', level: 'N5', definitionZh: '冰凉的', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_period_tsu', surface: '。🍦🍵', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-
-  // ==========================================
-  // 4. 💻 科技开发与极客 (Tech & Coding)
+  // 3. 💻 科技开发与极客热点 (Tech & Coding)
   // ==========================================
   {
     id: 'post_tech_01_text',
@@ -384,17 +209,10 @@ export const INITIAL_SEED_POSTS: Post[] = [
     repostsCount: 88,
     createdAt: '15m ago',
     sourceContext: {
-      originTitle: 'TypeScript 5.8 发布与 CI/CD 自动化构建热议：零 Bug 上线的快乐',
-      originSnippet: '少数派与掘金热帖：通过强类型检查与自动化测试，实现单周 0 线上故障。',
+      originTitle: 'TypeScript 5.8 正式发布，编译检查速度翻倍',
+      originSnippet: '少数派与掘金热帖：全面优化联合类型推导，开发体验与无故障率再创新高。',
       sourcePlatform: 'sspai',
-      originUrl: 'https://sspai.com',
-      culturalNoteZh: '在日语极客圈，“バグなし（无Bug）”是程序员下班前最幸福的口头禅。',
     },
-    legoBlocks: [
-      { text: 'はい！OK！', color: '#ff7b72', labelZh: '状态·没问题' },
-      { text: 'バグ', color: '#79c0ff', labelZh: '对象·Bug' },
-      { text: 'なし！🎉💪', color: '#7ee787', labelZh: '判定·全消灭' },
-    ],
     tokens: [
       { id: 't_hai', surface: 'はい', reading: 'はい', romaji: 'hai', lemma: 'はい', pos: '感叹词', level: 'N0', definitionZh: '好的/是的', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ex_hai', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
@@ -417,6 +235,11 @@ export const INITIAL_SEED_POSTS: Post[] = [
     likesCount: 380,
     repostsCount: 70,
     createdAt: '24m ago',
+    sourceContext: {
+      originTitle: 'AI 辅助编程重塑全栈开发者工作流',
+      originSnippet: '掘金热榜：从需求到单测一键成型，极客体验代码秒跑通的极致快乐。',
+      sourcePlatform: 'sspai',
+    },
     tokens: [
       { id: 't_koodo', surface: 'コード', reading: 'コード', romaji: 'koodo', lemma: 'コード', pos: '名词', level: 'N0', definitionZh: '代码', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_wo_t', surface: 'を', reading: 'を', romaji: 'wo', lemma: 'を', pos: '助词', level: 'N0', definitionZh: '动作对象', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
@@ -429,31 +252,40 @@ export const INITIAL_SEED_POSTS: Post[] = [
     ],
     comments: [],
   },
+
+  // ==========================================
+  // 4. 🍣 美食探店与居酒屋 (Food & Weibo Food)
+  // ==========================================
   {
-    id: 'post_tech_03',
-    persona: INITIAL_PERSONAS.tech_yuki!,
-    contentJa: '新しいパソコン。とても速い！🚀',
-    translationZh: '新电脑。速度超级快！',
-    imageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&auto=format&fit=crop&q=80',
-    audioUrl: '/audio/post_tech_03.mp3',
-    category: 'tech',
-    level: 'N5',
-    likesCount: 620,
-    repostsCount: 95,
-    createdAt: '48m ago',
+    id: 'post_food_01',
+    persona: INITIAL_PERSONAS.food_mei!,
+    contentJa: '寿司！おいしい！ありがとう！🍣✨',
+    translationZh: '寿司！好好吃！谢谢款待！',
+    imageUrl: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop&q=80',
+    audioUrl: '/audio/post_food_01.mp3',
+    category: 'food',
+    level: 'N0',
+    likesCount: 840,
+    repostsCount: 120,
+    createdAt: '10m ago',
+    sourceContext: {
+      originTitle: '东京银座老字号江户前寿司店探店热榜',
+      originSnippet: '微博美食大V探店：应季蓝鳍金枪鱼手握，入口即化的极致鲜甜。',
+      sourcePlatform: 'weibo',
+    },
     tokens: [
-      { id: 't_atarashii', surface: '新しい', reading: 'あたらしい', romaji: 'atarashii', lemma: '新しい', pos: '描述词', level: 'N5', definitionZh: '新的', pitchAccent: { pattern: 'nakadaka', pitchNotation: '4' } },
-      { id: 't_pasokon', surface: 'パソコン', reading: 'パソコン', romaji: 'pasokon', lemma: 'パソコン', pos: '名词', level: 'N5', definitionZh: '电脑/PC', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_period_p', surface: '。', reading: '', romaji: '', lemma: '。', pos: '标点', level: 'N5', definitionZh: '句号' },
-      { id: 't_totemo', surface: 'とても', reading: 'とても', romaji: 'totemo', lemma: 'とても', pos: '副词', level: 'N5', definitionZh: '非常', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_hayai', surface: '速い', reading: 'はやい', romaji: 'hayai', lemma: '速い', pos: '描述词', level: 'N5', definitionZh: '快的', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_hayai', surface: '！🚀', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N5', definitionZh: '表情' },
+      { id: 't_sushi', surface: '寿司', reading: 'すし', romaji: 'sushi', lemma: '寿司', pos: '名词', level: 'N0', definitionZh: '寿司', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
+      { id: 't_ex_su', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
+      { id: 't_oishii_s', surface: 'おいしい', reading: 'おいしい', romaji: 'oishii', lemma: '美味しい', pos: '描述词', level: 'N0', definitionZh: '美味/好吃', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
+      { id: 't_ex_oi_s', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
+      { id: 't_arigatou', surface: 'ありがとう', reading: 'ありがとう', romaji: 'arigatou', lemma: 'ありがとう', pos: '感叹词', level: 'N0', definitionZh: '谢谢/感恩', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
+      { id: 't_ex_ari', surface: '！🍣✨', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
     ],
     comments: [],
   },
 
   // ==========================================
-  // 5. ⚽ 体育运动与健身 (Sports & Fitness)
+  // 5. ⚽ 体育运动与欧冠热点 (Sports & Hupu)
   // ==========================================
   {
     id: 'post_sports_01',
@@ -468,17 +300,10 @@ export const INITIAL_SEED_POSTS: Post[] = [
     repostsCount: 310,
     createdAt: '20m ago',
     sourceContext: {
-      originTitle: '欧冠焦点战下半场补时绝杀：主场球迷见证逆转奇迹',
-      originSnippet: '虎扑足球热帖：第94分钟绝杀进球引爆全场，主教练激情拥抱每一位球员。',
+      originTitle: '欧冠焦点战补时第94分钟绝杀逆转',
+      originSnippet: '虎扑足球热帖：替补登场前锋绝杀建功，主场全场球迷沸腾相拥。',
       sourcePlatform: 'hupu',
-      originUrl: 'https://hupu.com',
-      culturalNoteZh: '在日语体育直播和社交讨论中，“最高（さいこう）”是获胜时使用频率最高的极度赞美词。',
     },
-    legoBlocks: [
-      { text: 'ゴール！', color: '#ff7b72', labelZh: '事件·进球' },
-      { text: '勝った！', color: '#79c0ff', labelZh: '结果·赢了' },
-      { text: '最高！⚽️🔥', color: '#7ee787', labelZh: '情绪·最棒' },
-    ],
     tokens: [
       { id: 't_gooru', surface: 'ゴール', reading: 'ゴール', romaji: 'gooru', lemma: 'ゴール', pos: '名词', level: 'N0', definitionZh: '进球/得分', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
       { id: 't_ex_gooru', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
@@ -489,73 +314,32 @@ export const INITIAL_SEED_POSTS: Post[] = [
     ],
     comments: [],
   },
-  {
-    id: 'post_sports_02_text',
-    persona: INITIAL_PERSONAS.soccer_ren!,
-    contentJa: '走る！疲れた！でも気持ちいい！🏃‍♂️💨',
-    translationZh: '跑步！累了！但很爽快！',
-    audioUrl: '/audio/post_sports_02_text.mp3',
-    category: 'sports',
-    level: 'N0',
-    likesCount: 350,
-    repostsCount: 28,
-    createdAt: '38m ago',
-    tokens: [
-      { id: 't_hashiru', surface: '走る', reading: 'はしる', romaji: 'hashiru', lemma: '走る', pos: '动作词', level: 'N0', definitionZh: '跑/跑步', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_ex_hashi', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_tsukareta', surface: '疲れた', reading: 'つかれた', romaji: 'tsukareta', lemma: '疲れる', pos: '动作词', level: 'N0', definitionZh: '累了', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_ex_tsuka', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_demo', surface: 'でも', reading: 'でも', romaji: 'demo', lemma: 'でも', pos: '连词', level: 'N0', definitionZh: '但是', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_kimochiii', surface: '気持ちいい', reading: 'きもちいい', romaji: 'kimochiii', lemma: '気持ちいい', pos: '描述词', level: 'N0', definitionZh: '感觉舒爽/痛快', pitchAccent: { pattern: 'nakadaka', pitchNotation: '4' } },
-      { id: 't_ex_kimo', surface: '！🏃‍♂️💨', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
 
   // ==========================================
-  // 6. 🎮 动漫与主机游戏 (Gaming & Anime)
+  // 6. 🎮 游戏热议与主机 (Gaming & Bilibili)
   // ==========================================
   {
     id: 'post_game_01',
     persona: INITIAL_PERSONAS.gaming_shin!,
-    contentJa: 'ゲームクリア！やったー！🎉🏆',
-    translationZh: '游戏通关！太棒啦！🎉🏆',
-    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80',
+    contentJa: 'ゲームクリア！やったー！🎮🎉',
+    translationZh: '游戏通关！太棒了！',
     audioUrl: '/audio/post_game_01.mp3',
     category: 'gaming',
     level: 'N0',
-    likesCount: 780,
-    repostsCount: 140,
-    createdAt: '10m ago',
+    likesCount: 420,
+    repostsCount: 38,
+    createdAt: '22m ago',
+    sourceContext: {
+      originTitle: '年度黑马独立游戏全成就速通热帖',
+      originSnippet: 'B站热门游戏视频：历时30小时全成就达成，精彩结局引发弹幕刷屏。',
+      sourcePlatform: 'bili',
+    },
     tokens: [
       { id: 't_geemu', surface: 'ゲーム', reading: 'ゲーム', romaji: 'geemu', lemma: 'ゲーム', pos: '名词', level: 'N0', definitionZh: '游戏', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_kuria', surface: 'クリア', reading: 'クリア', romaji: 'kuria', lemma: 'クリア', pos: '名词', level: 'N0', definitionZh: '通关/Clear', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_ex_kuri', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_yattaa', surface: 'やったー', reading: 'やったー', romaji: 'yattaa', lemma: 'やったー', pos: '感叹词', level: 'N0', definitionZh: '太好啦/搞定啦', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
-      { id: 't_ex_yatta', surface: '！🎉🏆', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
-    ],
-    comments: [],
-  },
-  {
-    id: 'post_game_02_text',
-    persona: INITIAL_PERSONAS.gaming_shin!,
-    contentJa: '強い敵！負けた！もう一回！🔥🎮',
-    translationZh: '好强的敌人！输了！再来一次！',
-    audioUrl: '/audio/post_game_02_text.mp3',
-    category: 'gaming',
-    level: 'N0',
-    likesCount: 520,
-    repostsCount: 60,
-    createdAt: '32m ago',
-    tokens: [
-      { id: 't_tsuyoi', surface: '強い', reading: 'つよい', romaji: 'tsuyoi', lemma: '強い', pos: '描述词', level: 'N0', definitionZh: '强大的/强', pitchAccent: { pattern: 'nakadaka', pitchNotation: '2' } },
-      { id: 't_teki', surface: '敵', reading: 'てき', romaji: 'teki', lemma: '敵', pos: '名词', level: 'N0', definitionZh: '敌人', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_ex_teki', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_maketa', surface: '負けた', reading: 'まけた', romaji: 'maketa', lemma: '負ける', pos: '动作词', level: 'N0', definitionZh: '输了', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_ex_make', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
-      { id: 't_mou', surface: 'もう', reading: 'もう', romaji: 'mou', lemma: 'もう', pos: '副词', level: 'N0', definitionZh: '再', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
-      { id: 't_ikkai', surface: '一回', reading: 'いっかい', romaji: 'ikkai', lemma: '一回', pos: '名词', level: 'N0', definitionZh: '一次', pitchAccent: { pattern: 'heiban', pitchNotation: '0' } },
-      { id: 't_ex_ikkai', surface: '！🔥🎮', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
+      { id: 't_kuria', surface: 'クリア', reading: 'クリア', romaji: 'kuria', lemma: 'クリア', pos: '名词', level: 'N0', definitionZh: '通关/清关', pitchAccent: { pattern: 'atamadaka', pitchNotation: '1' } },
+      { id: 't_ex_k', surface: '！', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '感叹号' },
+      { id: 't_yattaa', surface: 'やったー', reading: 'やったー', romaji: 'yattaa', lemma: 'やったー', pos: '感叹词', level: 'N0', definitionZh: '太棒了/成功了', pitchAccent: { pattern: 'nakadaka', pitchNotation: '3' } },
+      { id: 't_ex_y', surface: '！🎮🎉', reading: '', romaji: '', lemma: '！', pos: '标点', level: 'N0', definitionZh: '表情' },
     ],
     comments: [],
   },

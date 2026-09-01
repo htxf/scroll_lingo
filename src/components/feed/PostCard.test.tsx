@@ -41,7 +41,7 @@ describe('PostCard Component', () => {
     lastActiveTimestamp: Date.now(),
   };
 
-  it('should render post content, persona info, and level badge', () => {
+  it('should render post content, persona info, and category tag', () => {
     render(
       <PostCard
         post={mockPost}
@@ -53,10 +53,10 @@ describe('PostCard Component', () => {
 
     expect(screen.getByText('Ken ☕')).not.toBeNull();
     expect(screen.getByText(/@coffee_ken/)).not.toBeNull();
-    expect(screen.getByText('N5 入门')).not.toBeNull();
+    expect(screen.getByText('#咖啡')).not.toBeNull();
   });
 
-  it('should toggle pure twitter vs study mode when clicking mode button', () => {
+  it('should toggle pure reading vs study mode when clicking mode button', () => {
     render(
       <PostCard
         post={mockPost}
@@ -66,10 +66,10 @@ describe('PostCard Component', () => {
       />
     );
 
-    const modeButton = screen.getByText('解析');
+    const modeButton = screen.getByText('👓 拆词');
     fireEvent.click(modeButton);
 
-    expect(screen.getByText('纯享')).not.toBeNull();
+    expect(screen.getByText('📖 纯享')).not.toBeNull();
   });
 
   it('should trigger onSpeakPost when clicking speaker button', () => {

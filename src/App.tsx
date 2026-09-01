@@ -30,8 +30,6 @@ export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('feed');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   
-  // Daily Feed Pacing & Anti-Fatigue Milestone
-  const [dailyPostLimit, setDailyPostLimit] = useState<number>(12);
   const [isReviewOnlyMode, setIsReviewOnlyMode] = useState<boolean>(false);
 
   const triggerToast = useCallback((msg: string) => {
@@ -297,14 +295,13 @@ export function App() {
   const basePosts = n0FilteredPosts.length > 0 ? n0FilteredPosts : posts;
   const srsRankedPosts = rankPostsForInFeedSRS(basePosts, userState, savedWords);
 
-  // Active Feed Posts Slice
+  // Active Feed Posts
   const activeFeedPosts = isReviewOnlyMode
     ? srsRankedPosts.filter((p) => p.tokens.some((t) => userState.explicitFocusWords.has(t.lemma) || userState.explicitKnownWords.has(t.lemma)))
-    : srsRankedPosts.slice(0, dailyPostLimit);
+    : srsRankedPosts;
 
-  // State checks: Finished daily batch vs exhausted entire database
-  const isEntireDatabaseExhausted = !isReviewOnlyMode && activeFeedPosts.length >= srsRankedPosts.length;
-  const hasReachedDailyLimit = !isReviewOnlyMode && !isEntireDatabaseExhausted && activeFeedPosts.length >= dailyPostLimit;
+  // State checks: Finished viewing all available hot topics
+  const isEntireDatabaseExhausted = !isReviewOnlyMode && activeFeedPosts.length > 0;
 
   return (
     <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', paddingBottom: '80px' }}>
@@ -341,10 +338,10 @@ export function App() {
               onClick={() => setShowKanaChart(true)}
               style={{
                 fontSize: '11px',
-                padding: '3px 8px',
-                borderRadius: '12px',
+                padding: '4px 10px',
+                borderRadius: 'var(--border-radius-full)',
                 border: '1px solid var(--border-color)',
-                background: 'transparent',
+                background: 'var(--bg-tertiary)',
                 color: 'var(--text-secondary)',
                 cursor: 'pointer',
               }}
@@ -353,23 +350,17 @@ export function App() {
               五十音
             </button>
             <button
-              onClick={() => setShowAdmin(true)}
+              onClick={() => setShowOnboarding(true)}
               style={{
                 fontSize: '11px',
-                padding: '3px 8px',
-                borderRadius: '12px',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-secondary)',
+                padding: '4px 10px',
+                borderRadius: 'var(--border-radius-full)',
+                background: 'rgba(29, 155, 240, 0.15)',
+                color: 'var(--accent-primary)',
+                border: '1px solid var(--accent-primary)',
+                fontWeight: 600,
                 cursor: 'pointer',
               }}
-              title="管理后台"
-            >
-              CMS
-            </button>
-            <button
-              onClick={() => setShowOnboarding(true)}
-              style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'var(--bg-tertiary)', color: 'var(--accent-secondary)', border: 'none', cursor: 'pointer' }}
             >
               {userState.baselineLevel === 'N0' ? 'N0 萌芽' : `JLPT ${userState.baselineLevel}`}
             </button>
@@ -396,90 +387,7 @@ export function App() {
             />
           ))}
 
-          {/* Case 1: Daily Target Reached (Prompt to stop or add 5 more) */}
-          {hasReachedDailyLimit && (
-            <div
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--border-radius-md)',
-                padding: '24px 20px',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '12px',
-                marginTop: '8px',
-              }}
-            >
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                今日推荐推文已完成
-              </div>
-              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '280px', lineHeight: '1.5' }}>
-                适度刷帖更利于长期语感沉淀。你可以开启温故复习，或继续加刷。
-              </p>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '6px' }}>
-                <button
-                  onClick={() => {
-                    setIsReviewOnlyMode(true);
-                    triggerToast('已切换至温故复习模式');
-                  }}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 'var(--border-radius-full)',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-tertiary)',
-                    color: 'var(--text-primary)',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                  }}
-                >
-                  开启温故复习
-                </button>
-
-                <button
-                  onClick={() => {
-                    setDailyPostLimit((prev) => prev + 5);
-                    triggerToast('已为你加更 5 篇推文');
-                  }}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 'var(--border-radius-full)',
-                    border: 'none',
-                    backgroundColor: 'var(--accent-primary)',
-                    color: '#ffffff',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                  }}
-                >
-                  再来 5 篇推文
-                </button>
-
-                {!userState.userId && (
-                  <button
-                    onClick={() => setShowAuth(true)}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: 'var(--border-radius-full)',
-                      border: '1px solid var(--accent-secondary)',
-                      backgroundColor: 'transparent',
-                      color: 'var(--accent-secondary)',
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    保存进度到云端
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Case 2: All Available Posts Exhausted (Clean Closure instead of stuck loading) */}
+          {/* Clean Bottom Milestone (All live topics loaded) */}
           {isEntireDatabaseExhausted && (
             <div
               style={{
@@ -524,7 +432,6 @@ export function App() {
 
                 <button
                   onClick={() => {
-                    setDailyPostLimit(12);
                     setIsReviewOnlyMode(false);
                     triggerToast('已重置推文流，重新开始');
                   }}

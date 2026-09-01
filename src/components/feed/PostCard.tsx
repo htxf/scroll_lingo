@@ -120,51 +120,30 @@ export function PostCard({
         </button>
       </div>
 
-      {/* Lego Blocks for N0/N5 micro structures */}
-      {isStudyMode && post.legoBlocks && post.legoBlocks.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
-          {post.legoBlocks.map((block, idx) => (
-            <div
-              key={idx}
-              style={{
-                backgroundColor: 'var(--bg-tertiary)',
-                borderLeft: `3px solid ${block.color}`,
-                padding: '3px 8px',
-                borderRadius: '4px',
-                fontSize: '11px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-              }}
-            >
-              <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{block.text}</span>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '10px' }}>({block.labelZh})</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Chinese Translation */}
+      {/* Chinese Translation (Only visible in study mode) */}
       {isStudyMode && (
         <div
           style={{
             fontSize: '13px',
             color: 'var(--text-secondary)',
-            marginTop: '2px',
             lineHeight: '1.5',
+            padding: '4px 8px',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '6px',
+            borderLeft: '2px solid var(--accent-primary)',
           }}
         >
           {post.translationZh}
         </div>
       )}
 
-      {/* Dual-Layer Hot Topic Origin & Cultural Context Expander */}
+      {/* Dual-Layer Hot Topic Origin Drawer (Clean & concise) */}
       {post.sourceContext && (
         <div
           style={{
             backgroundColor: 'var(--bg-tertiary)',
-            borderRadius: 'var(--border-radius-sm)',
-            border: '1px dashed var(--border-color)',
+            borderRadius: '8px',
+            border: '1px solid var(--border-color)',
             overflow: 'hidden',
           }}
         >
@@ -172,7 +151,7 @@ export function PostCard({
             onClick={() => setIsContextExpanded((prev) => !prev)}
             style={{
               width: '100%',
-              padding: '8px 12px',
+              padding: '6px 10px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -184,54 +163,30 @@ export function PostCard({
               fontWeight: 500,
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span>{getPlatformLabel(post.sourceContext.sourcePlatform)}</span>
-              <span style={{ color: 'var(--text-primary)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+              <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                {getPlatformLabel(post.sourceContext.sourcePlatform)}
+              </span>
+              <span style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {post.sourceContext.originTitle}
               </span>
             </span>
-            <span>{isContextExpanded ? '收起 ▴' : '热点原文 ▾'}</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '4px' }}>
+              {isContextExpanded ? '收起 ▴' : '背景 ▾'}
+            </span>
           </button>
 
-          {isContextExpanded && (
+          {isContextExpanded && post.sourceContext.originSnippet && (
             <div
               style={{
-                padding: '8px 12px 10px 12px',
+                padding: '6px 10px 8px 10px',
                 borderTop: '1px solid var(--border-color)',
-                fontSize: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                lineHeight: '1.5',
+                fontSize: '11px',
+                color: 'var(--text-secondary)',
+                lineHeight: '1.4',
               }}
             >
-              {post.sourceContext.originSnippet && (
-                <div style={{ color: 'var(--text-primary)' }}>
-                  {post.sourceContext.originSnippet}
-                </div>
-              )}
-
-              {post.sourceContext.culturalNoteZh && (
-                <div style={{ fontSize: '11px', color: 'var(--accent-secondary)' }}>
-                  💡 语境解析：{post.sourceContext.culturalNoteZh}
-                </div>
-              )}
-
-              {post.sourceContext.originUrl && (
-                <a
-                  href={post.sourceContext.originUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    fontSize: '11px',
-                    color: 'var(--accent-primary)',
-                    textDecoration: 'none',
-                    alignSelf: 'flex-start',
-                  }}
-                >
-                  查看热点出处 ↗
-                </a>
-              )}
+              {post.sourceContext.originSnippet}
             </div>
           )}
         </div>
