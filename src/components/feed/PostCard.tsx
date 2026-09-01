@@ -12,6 +12,7 @@ interface PostCardProps {
   onStopText?: () => void;
   isPlayingAudio?: boolean;
   onBookmarkPost?: (post: Post) => void;
+  selectedTokenId?: string | null;
 }
 
 export function PostCard({
@@ -22,28 +23,16 @@ export function PostCard({
   onStopText,
   isPlayingAudio = false,
   onBookmarkPost,
+  selectedTokenId,
 }: PostCardProps) {
   // Default to pure native Twitter mode (clean, no clutter)
   const [isStudyMode, setIsStudyMode] = useState(false);
-  const [isContextExpanded, setIsContextExpanded] = useState(false);
 
   const handleAudioToggle = () => {
     if (isPlayingAudio && onStopText) {
       onStopText();
     } else {
       onSpeakPost(post);
-    }
-  };
-
-  const getPlatformLabel = (platform?: string) => {
-    switch (platform) {
-      case 'weibo': return '🔥 微博热搜';
-      case 'sspai': return '⚡️ 少数派';
-      case 'zhihu': return '💡 知乎热榜';
-      case 'hupu': return '🏀 虎扑热帖';
-      case 'bili': return '📺 B站热门';
-      case 'reddit': return '🌐 Reddit';
-      default: return '📰 实时热点';
     }
   };
 
@@ -60,8 +49,13 @@ export function PostCard({
         boxShadow: 'var(--shadow-sm)',
       }}
     >
-      {/* Header Block: Persona Identity & Level/Topic Badge */}
-      <PersonaHeader persona={post.persona} createdAt={post.createdAt} level={post.level} />
+      {/* Header Block: Persona Identity & Native Topic Badge */}
+      <PersonaHeader
+        persona={post.persona}
+        createdAt={post.createdAt}
+        level={post.level}
+        sourcePlatform={post.sourceContext?.sourcePlatform}
+      />
 
       {/* Media Block: Image */}
       {post.imageUrl && (
@@ -90,7 +84,13 @@ export function PostCard({
       >
         <div style={{ flex: 1, fontSize: '16px', fontFamily: 'var(--font-japanese)' }}>
           {isStudyMode ? (
-            <RubyTokenText tokens={post.tokens} userState={userState} onTokenClick={onTokenClick} isStudyMode={isStudyMode} />
+            <RubyTokenText
+              tokens={post.tokens}
+              userState={userState}
+              onTokenClick={onTokenClick}
+              isStudyMode={isStudyMode}
+              selectedTokenId={selectedTokenId}
+            />
           ) : (
             <span style={{ color: 'var(--text-primary)', lineHeight: '1.6' }}>{post.contentJa}</span>
           )}
@@ -112,7 +112,7 @@ export function PostCard({
             fontSize: '14px',
             color: isPlayingAudio ? '#ffffff' : 'var(--text-secondary)',
             flexShrink: 0,
-            transition: 'all 0.15s ease',
+            transition: 'background-color 0.15s ease, color 0.15s ease',
           }}
           title={isPlayingAudio ? '暂停朗读' : '朗读推文'}
         >
@@ -127,68 +127,13 @@ export function PostCard({
             fontSize: '13px',
             color: 'var(--text-secondary)',
             lineHeight: '1.5',
-            padding: '4px 8px',
+            padding: '6px 10px',
             backgroundColor: 'rgba(255, 255, 255, 0.03)',
             borderRadius: '6px',
             borderLeft: '2px solid var(--accent-primary)',
           }}
         >
           {post.translationZh}
-        </div>
-      )}
-
-      {/* Dual-Layer Hot Topic Origin Drawer (Clean & concise) */}
-      {post.sourceContext && (
-        <div
-          style={{
-            backgroundColor: 'var(--bg-tertiary)',
-            borderRadius: '8px',
-            border: '1px solid var(--border-color)',
-            overflow: 'hidden',
-          }}
-        >
-          <button
-            onClick={() => setIsContextExpanded((prev) => !prev)}
-            style={{
-              width: '100%',
-              padding: '6px 10px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '11px',
-              color: 'var(--text-secondary)',
-              fontWeight: 500,
-            }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-              <span style={{ fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
-                {getPlatformLabel(post.sourceContext.sourcePlatform)}
-              </span>
-              <span style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {post.sourceContext.originTitle}
-              </span>
-            </span>
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '4px' }}>
-              {isContextExpanded ? '收起 ▴' : '背景 ▾'}
-            </span>
-          </button>
-
-          {isContextExpanded && post.sourceContext.originSnippet && (
-            <div
-              style={{
-                padding: '6px 10px 8px 10px',
-                borderTop: '1px solid var(--border-color)',
-                fontSize: '11px',
-                color: 'var(--text-secondary)',
-                lineHeight: '1.4',
-              }}
-            >
-              {post.sourceContext.originSnippet}
-            </div>
-          )}
         </div>
       )}
 

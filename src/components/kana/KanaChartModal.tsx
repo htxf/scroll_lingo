@@ -198,35 +198,35 @@ export function KanaChartModal({ isOpen, onClose }: KanaChartModalProps) {
                       key={cIdx}
                       onClick={() => handleKanaClick(item.hira)}
                       style={{
-                        backgroundColor: isSelected ? 'var(--bg-tertiary)' : 'var(--bg-primary)',
-                        border: isSelected ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)',
+                        backgroundColor: isSelected ? 'rgba(29, 155, 240, 0.18)' : 'var(--bg-primary)',
+                        border: isSelected ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
                         borderRadius: 'var(--border-radius-sm)',
-                        padding: '6px',
+                        padding: '8px 4px',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '2px',
+                        gap: '3px',
                         cursor: 'pointer',
-                        transform: isSelected ? 'scale(0.94)' : 'scale(1)',
-                        boxShadow: isSelected ? '0 0 8px rgba(29, 155, 240, 0.3)' : 'none',
-                        transition: 'all 0.12s ease',
+                        boxShadow: isSelected ? '0 0 10px rgba(29, 155, 240, 0.25)' : 'none',
+                        transition: 'background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
                       }}
                     >
                       <span
                         style={{
                           fontSize: '16px',
-                          fontWeight: 'bold',
+                          fontWeight: 600,
                           fontFamily: 'var(--font-japanese)',
                           color: isSelected ? 'var(--accent-primary)' : 'var(--text-primary)',
+                          lineHeight: '1.1',
                         }}
                       >
                         {item.hira}{' '}
-                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 400 }}>
                           {item.kata}
                         </span>
                       </span>
-                      <span style={{ fontSize: '10px', color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)', fontWeight: isSelected ? 'bold' : 'normal' }}>
+                      <span style={{ fontSize: '10px', color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)', fontWeight: isSelected ? 600 : 400 }}>
                         {item.romaji}
                       </span>
                     </button>

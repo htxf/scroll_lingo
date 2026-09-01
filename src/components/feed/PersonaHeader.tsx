@@ -4,10 +4,11 @@ interface PersonaHeaderProps {
   persona: Persona;
   createdAt: string;
   level?: JLPTLevel;
+  sourcePlatform?: string;
   onPersonaClick?: (persona: Persona) => void;
 }
 
-export function PersonaHeader({ persona, createdAt, onPersonaClick }: PersonaHeaderProps) {
+export function PersonaHeader({ persona, createdAt, sourcePlatform, onPersonaClick }: PersonaHeaderProps) {
   const categoryBadgeMap: Record<string, string> = {
     coffee: '咖啡',
     tech: '科技',
@@ -15,6 +16,17 @@ export function PersonaHeader({ persona, createdAt, onPersonaClick }: PersonaHea
     gaming: '游戏',
     food: '美食',
     lifestyle: '日常',
+  };
+
+  const getPlatformTag = (platform?: string) => {
+    switch (platform) {
+      case 'weibo': return '#微博热点';
+      case 'sspai': return '#少数派';
+      case 'zhihu': return '#知乎精选';
+      case 'hupu': return '#虎扑体育';
+      case 'bili': return '#B站热门';
+      default: return `#${categoryBadgeMap[persona.category] || persona.category}`;
+    }
   };
 
   return (
@@ -50,18 +62,18 @@ export function PersonaHeader({ persona, createdAt, onPersonaClick }: PersonaHea
         </div>
       </div>
 
-      {/* Pure Subdued Category Tag */}
+      {/* Pure Subdued Platform/Category Tag */}
       <span
         style={{
           fontSize: '11px',
-          padding: '2px 8px',
+          padding: '3px 8px',
           borderRadius: '10px',
           backgroundColor: 'var(--bg-tertiary)',
           color: 'var(--text-secondary)',
-          fontWeight: 400,
+          fontWeight: 500,
         }}
       >
-        #{categoryBadgeMap[persona.category] || persona.category}
+        {getPlatformTag(sourcePlatform)}
       </span>
     </div>
   );

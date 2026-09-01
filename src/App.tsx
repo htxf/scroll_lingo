@@ -384,6 +384,7 @@ export function App() {
               onStopText={stop}
               isPlayingAudio={playingId === post.id}
               onBookmarkPost={handleBookmarkPost}
+              selectedTokenId={selectedToken?.id}
             />
           ))}
 

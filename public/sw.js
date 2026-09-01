@@ -1,4 +1,4 @@
-const CACHE_NAME = 'scroll-lingo-v4';
+const CACHE_NAME = 'scroll-lingo-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

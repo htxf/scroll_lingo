@@ -6,9 +6,10 @@ interface RubyTokenTextProps {
   userState: UserKnowledgeState;
   onTokenClick?: (token: Token) => void;
   isStudyMode?: boolean;
+  selectedTokenId?: string | null;
 }
 
-export function RubyTokenText({ tokens, userState, onTokenClick, isStudyMode = true }: RubyTokenTextProps) {
+export function RubyTokenText({ tokens, userState, onTokenClick, isStudyMode = true, selectedTokenId }: RubyTokenTextProps) {
   // Helper to test if a token surface is pure punctuation or emoji
   const isPunctuationOrEmoji = (token: Token) => {
     if (token.pos === '标点') return true;
@@ -23,6 +24,7 @@ export function RubyTokenText({ tokens, userState, onTokenClick, isStudyMode = t
         const isPunctuation = isPunctuationOrEmoji(token);
         const isInteractive = !isPunctuation && Boolean(token.definitionZh || token.reading);
         const showFurigana = shouldShowFurigana(token, userState);
+        const isSelected = selectedTokenId === token.id;
 
         const handleClick = (e: React.MouseEvent) => {
           if (isInteractive && onTokenClick) {
@@ -58,12 +60,13 @@ export function RubyTokenText({ tokens, userState, onTokenClick, isStudyMode = t
               display: 'inline-flex',
               flexDirection: 'column',
               alignItems: 'center',
-              backgroundColor: 'var(--bg-tertiary)',
-              border: '1px solid var(--border-color)',
-              padding: '2px 7px',
+              backgroundColor: isSelected ? 'rgba(29, 155, 240, 0.22)' : 'var(--bg-tertiary)',
+              border: isSelected ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
+              boxShadow: isSelected ? '0 0 10px rgba(29, 155, 240, 0.3)' : 'none',
+              padding: '3px 8px',
               borderRadius: '6px',
-              transition: 'all 0.15s ease',
-              margin: '1px 2px',
+              transition: 'background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
+              margin: '2px 3px',
               verticalAlign: 'middle',
             }}
             title={isInteractive ? `点击解构发音与释义: ${token.surface}` : undefined}
