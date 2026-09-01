@@ -1,0 +1,35 @@
+﻿name: Daily Hot Topics Pipeline
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天北京时间早上 8:00 (UTC 00:00) 自动触发
+  workflow_dispatch:     # 支持手动在 GitHub 页面一键点击触发
+
+jobs:
+  update-corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Hot Topics Generator
+        run: node scripts/generate-daily-posts.js
+
+      - name: Run Tests
+        run: npm test -- --run
+
+      - name: Commit & Push if Changes Detected
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(auto): update daily hot topics corpus [skip ci]" && git push)

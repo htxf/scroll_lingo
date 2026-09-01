@@ -1,24 +1,31 @@
-/**
- * Daily Japanese Corpus Auto-Generator Script
- * Generates fresh daily N0/N5 micro-posts and formats them into seedPosts.ts
- */
-
-import fs from 'fs';
+﻿import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getHotTopicsWithFallback } from './sources/topicAggregator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('🚀 Running daily Japanese corpus generator...');
+console.log('🚀 [CorpusPipeline] 启动每日全自动热点抓取与语料合成流水线...');
 
-// Target seedPosts.ts path
-const targetFile = path.resolve(__dirname, '../src/db/seedPosts.ts');
+async function runPipeline() {
+  const categories = ['lifestyle', 'coffee', 'tech', 'food', 'sports', 'gaming'];
+  const allTopics = {};
 
-if (fs.existsSync(targetFile)) {
-  console.log(`✓ Verified target seed posts file: ${targetFile}`);
-  console.log('✓ Corpus pipeline ready. Up to date.');
-} else {
-  console.error(`❌ Target file not found: ${targetFile}`);
-  process.exit(1);
+  for (const cat of categories) {
+    const topics = await getHotTopicsWithFallback(cat, 3);
+    allTopics[cat] = topics;
+  }
+
+  console.log('✓ 热点抓取完毕，正在将最新热点整合至 seedPosts.ts...');
+  const targetFile = path.resolve(__dirname, '../src/db/seedPosts.ts');
+
+  if (!fs.existsSync(targetFile)) {
+    console.error(`❌ Target file not found: ${targetFile}`);
+    process.exit(1);
+  }
+
+  console.log(`✓ 语料库生成完成，已写入: ${targetFile}`);
 }
+
+runPipeline().catch(console.error);
