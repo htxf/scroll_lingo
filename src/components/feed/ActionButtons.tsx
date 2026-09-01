@@ -55,7 +55,7 @@ export function ActionButtons({
       <button
         onClick={onToggleStudyMode}
         style={{
-          padding: '4px 12px',
+          padding: '5px 12px',
           borderRadius: 'var(--border-radius-full)',
           border: isStudyMode ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
           backgroundColor: isStudyMode ? 'rgba(29, 155, 240, 0.15)' : 'var(--bg-tertiary)',
@@ -63,14 +63,14 @@ export function ActionButtons({
           fontSize: '11px',
           fontWeight: 600,
           cursor: 'pointer',
-          transition: 'all 0.15s ease',
+          transition: 'background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease',
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
         }}
-        title="切换推文纯净阅读 / 拆词学习模式"
+        title="切换原文与分词学习模式"
       >
-        <span>{isStudyMode ? '📖 纯享' : '👓 拆词'}</span>
+        <span>{isStudyMode ? '原文' : '🔤 分词'}</span>
       </button>
     </div>
   );

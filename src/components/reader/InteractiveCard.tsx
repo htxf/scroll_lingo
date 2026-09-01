@@ -34,16 +34,7 @@ export function InteractiveCard({
   const isFocus = userState.explicitFocusWords.has(token.lemma) || userState.explicitFocusWords.has(token.surface);
 
   const isKanaToken = token.level === 'N0' || token.surface.length <= 2;
-
-  const simplifyPos = (pos: string) => {
-    if (pos.includes('动词')) return '动作';
-    if (pos.includes('名词')) return '名词';
-    if (pos.includes('形容词') || pos.includes('描述')) return '描述';
-    if (pos.includes('感叹')) return '感叹';
-    if (pos.includes('代词')) return '代词';
-    if (pos.includes('助词')) return '助词';
-    return pos;
-  };
+  const hasLemmaForm = Boolean(token.lemma && token.lemma !== token.surface);
 
   const handleSpeechToggle = () => {
     if (isPlaying) {
@@ -63,12 +54,6 @@ export function InteractiveCard({
     pattern: token.surface.length <= 2 ? 'atamadaka' : 'heiban',
     pitchNotation: token.surface.length <= 2 ? '1' : '0',
   };
-
-  // Clean concise grammar & lemma breakdown
-  const grammarNote =
-    token.lemma && token.lemma !== token.surface
-      ? `• 原形：${token.lemma} (${token.pos || '常用词'})`
-      : `• 词性：${token.pos || '常用词'}`;
 
   return (
     <div
@@ -114,8 +99,8 @@ export function InteractiveCard({
         {/* Header with Type, Level and Clear Close '✕' Button */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 'bold' }}>
-              {isKanaToken ? '假名卡' : '词汇卡'} · {simplifyPos(token.pos)}
+            <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 700 }}>
+              {isKanaToken ? '假名卡' : '词汇解析'}
             </span>
             <span
               style={{
@@ -124,10 +109,10 @@ export function InteractiveCard({
                 backgroundColor: 'var(--bg-tertiary)',
                 color: 'var(--accent-primary)',
                 fontSize: '11px',
-                fontWeight: 'bold',
+                fontWeight: 700,
               }}
             >
-              {token.level === 'N0' ? 'N0' : token.level}
+              {token.level === 'N0' ? 'N0 萌芽' : `JLPT ${token.level}`}
             </span>
           </div>
 
@@ -261,21 +246,23 @@ export function InteractiveCard({
           </button>
         </div>
 
-        {/* Concise Grammar & Context Hint */}
-        <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
-          <div
-            style={{
-              backgroundColor: 'var(--bg-primary)',
-              border: '1px solid var(--border-color)',
-              padding: '8px 12px',
-              borderRadius: 'var(--border-radius-sm)',
-              fontSize: '11px',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {grammarNote}
+        {/* Concise Grammar Lemma Hint (Only if inflected form exists) */}
+        {hasLemmaForm && (
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
+            <div
+              style={{
+                backgroundColor: 'var(--bg-primary)',
+                border: '1px solid var(--border-color)',
+                padding: '8px 12px',
+                borderRadius: 'var(--border-radius-sm)',
+                fontSize: '12px',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              词汇原形：<strong style={{ color: 'var(--text-primary)' }}>{token.lemma}</strong>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { db, initializeDatabase, toUserKnowledgeState, UserStateEntity, SavedWordEntity } from './db/database';
-import { Post, Token, UserKnowledgeState } from './types';
+import { Post, Token, Persona, UserKnowledgeState } from './types';
 import { PostCard } from './components/feed/PostCard';
 import { InteractiveCard } from './components/reader/InteractiveCard';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { BookmarksTab } from './components/bookmarks/BookmarksTab';
 import { ProfileTab } from './components/profile/ProfileTab';
+import { PersonaProfileModal } from './components/profile/PersonaProfileModal';
 import { BottomNav, NavTab } from './components/layout/BottomNav';
 import { OfflineBadge } from './components/common/OfflineBadge';
 import { AdminWorkbench } from './components/admin/AdminWorkbench';
@@ -23,6 +24,7 @@ export function App() {
   const [savedWords, setSavedWords] = useState<SavedWordEntity[]>([]);
   const [userState, setUserState] = useState<UserKnowledgeState | null>(null);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+  const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
@@ -108,10 +110,12 @@ export function App() {
   const handleBookmarkPost = async (post: Post) => {
     if (!userState) return;
 
+    let addedCount = 0;
     for (const token of post.tokens) {
-      if (token.lemma && token.definitionZh) {
+      if (token.lemma && token.definitionZh && token.pos !== '标点') {
+        const stableId = `saved_${token.lemma}`;
         const newEntity: SavedWordEntity = {
-          id: `saved_${token.id}_${Date.now()}`,
+          id: stableId,
           lemma: token.lemma,
           surface: token.surface,
           reading: token.reading,
@@ -121,12 +125,13 @@ export function App() {
           addedAt: Date.now(),
         };
         await db.savedWords.put(newEntity);
+        addedCount++;
       }
     }
 
     const updatedSaved = await db.savedWords.toArray();
     setSavedWords(updatedSaved);
-    triggerToast('已将本帖词汇存入生词书签库');
+    triggerToast(addedCount > 0 ? `已将本帖 ${addedCount} 个词汇存入生词本` : '已更新生词本');
   };
 
   const handleLoginSuccess = async (userEmail: string) => {
@@ -231,9 +236,10 @@ export function App() {
       newFocus.add(lemma);
       newKnown.delete(lemma);
 
-      if (selectedToken) {
+      if (selectedToken && selectedToken.pos !== '标点') {
+        const stableId = `saved_${selectedToken.lemma}`;
         const newEntity: SavedWordEntity = {
-          id: `saved_${selectedToken.id}_${Date.now()}`,
+          id: stableId,
           lemma: selectedToken.lemma,
           surface: selectedToken.surface,
           reading: selectedToken.reading,
@@ -385,6 +391,7 @@ export function App() {
               isPlayingAudio={playingId === post.id}
               onBookmarkPost={handleBookmarkPost}
               selectedTokenId={selectedToken?.id}
+              onPersonaClick={(p) => setSelectedPersona(p)}
             />
           ))}
 
@@ -516,6 +523,12 @@ export function App() {
         onClose={() => setSelectedToken(null)}
         onToggleKnown={handleToggleKnown}
         onToggleFocus={handleToggleFocus}
+      />
+
+      {/* Persona Profile Modal */}
+      <PersonaProfileModal
+        persona={selectedPersona}
+        onClose={() => setSelectedPersona(null)}
       />
 
       {/* Fifty-Sounds Kana Chart Modal */}

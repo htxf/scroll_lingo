@@ -66,10 +66,10 @@ describe('PostCard Component', () => {
       />
     );
 
-    const modeButton = screen.getByText('👓 拆词');
+    const modeButton = screen.getByText('🔤 分词');
     fireEvent.click(modeButton);
 
-    expect(screen.getByText('📖 纯享')).not.toBeNull();
+    expect(screen.getByText('原文')).not.toBeNull();
   });
 
   it('should trigger onSpeakPost when clicking speaker button', () => {

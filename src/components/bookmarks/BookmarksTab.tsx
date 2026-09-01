@@ -49,7 +49,7 @@ export function BookmarksTab({ savedWords, onRemoveWord, onMarkKnown }: Bookmark
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         {savedWords.map((word) => {
           const isPlaying = playingId === `saved_${word.id}`;
           return (
@@ -58,82 +58,62 @@ export function BookmarksTab({ savedWords, onRemoveWord, onMarkKnown }: Bookmark
               style={{
                 backgroundColor: 'var(--bg-secondary)',
                 border: '1px solid var(--border-color)',
-                borderRadius: 'var(--border-radius-md)',
-                padding: 'var(--space-4)',
+                borderRadius: 'var(--border-radius-sm)',
+                padding: '10px 14px',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--space-2)',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 'var(--space-3)',
                 boxShadow: 'var(--shadow-sm)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                  <span style={{ fontSize: '18px', fontWeight: 700, fontFamily: 'var(--font-japanese)', color: 'var(--text-primary)' }}>
+              {/* Left Content Column */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '16px', fontWeight: 700, fontFamily: 'var(--font-japanese)', color: 'var(--text-primary)' }}>
                     {word.surface}
                   </span>
                   {word.reading && word.reading !== word.surface && (
-                    <span style={{ fontSize: '13px', color: 'var(--accent-primary)', fontWeight: 600 }}>
+                    <span style={{ fontSize: '12px', color: 'var(--accent-primary)', fontWeight: 600 }}>
                       {word.reading}
                     </span>
                   )}
-                  <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: 'var(--border-radius-xs)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                  <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: 'var(--border-radius-xs)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)', fontWeight: 600 }}>
                     {word.level}
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                  <button
-                    onClick={() => speak(word.surface, `saved_${word.id}`)}
-                    style={{
-                      background: isPlaying ? 'var(--accent-secondary)' : 'var(--bg-tertiary)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '50%',
-                      width: '28px',
-                      height: '28px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      color: isPlaying ? '#ffffff' : 'var(--text-secondary)',
-                    }}
-                    title="朗读发音"
-                  >
-                    🔊
-                  </button>
-
-                  <button
-                    onClick={() => onRemoveWord(word.id)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--text-muted)',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      padding: '4px',
-                    }}
-                    title="删除"
-                  >
-                    ✕
-                  </button>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {word.definitionZh}
                 </div>
               </div>
 
-              <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500, lineHeight: '1.4' }}>
-                {word.definitionZh}
-              </div>
+              {/* Right Action Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <button
+                  onClick={() => speak(word.surface, `saved_${word.id}`)}
+                  style={{
+                    background: isPlaying ? 'var(--accent-secondary)' : 'var(--bg-tertiary)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    color: isPlaying ? '#ffffff' : 'var(--text-secondary)',
+                  }}
+                  title="发音"
+                >
+                  🔊
+                </button>
 
-              {word.contextSentence && (
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'var(--font-japanese)', marginTop: '2px', lineHeight: '1.4' }}>
-                  语境: 「{word.contextSentence}」
-                </div>
-              )}
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-1)' }}>
                 <button
                   onClick={() => onMarkKnown(word.lemma)}
                   style={{
-                    padding: '4px 12px',
+                    padding: '4px 10px',
                     borderRadius: 'var(--border-radius-full)',
                     border: '1px solid var(--border-color)',
                     backgroundColor: 'var(--bg-tertiary)',
@@ -141,9 +121,26 @@ export function BookmarksTab({ savedWords, onRemoveWord, onMarkKnown }: Bookmark
                     fontSize: '11px',
                     fontWeight: 600,
                     cursor: 'pointer',
+                    whiteSpace: 'nowrap',
                   }}
+                  title="掌握并移入已掌握库"
                 >
-                  ✓ 标为已掌握
+                  ✓ 掌握
+                </button>
+
+                <button
+                  onClick={() => onRemoveWord(word.id)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    padding: '4px',
+                  }}
+                  title="移出生词本"
+                >
+                  ✕
                 </button>
               </div>
             </div>

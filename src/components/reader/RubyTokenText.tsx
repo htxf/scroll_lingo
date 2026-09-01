@@ -84,13 +84,6 @@ export function RubyTokenText({ tokens, userState, onTokenClick, isStudyMode = t
                 {token.surface}
               </span>
             )}
-
-            {/* Tiny POS hint */}
-            {token.pos && (
-              <span style={{ fontSize: '9px', color: 'var(--text-secondary)', fontWeight: 500, marginTop: '2px', lineHeight: '1' }}>
-                {token.pos.replace('词', '')}
-              </span>
-            )}
           </span>
         );
       })}

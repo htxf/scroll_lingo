@@ -30,10 +30,11 @@ export function PersonaHeader({ persona, createdAt, sourcePlatform, onPersonaCli
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-2)' }}>
       <div
-        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flex: 1, minWidth: 0 }}
         onClick={() => onPersonaClick?.(persona)}
+        title={`查看 ${persona.name} 的主页`}
       >
         <img
           src={persona.avatarUrl}
@@ -44,20 +45,21 @@ export function PersonaHeader({ persona, createdAt, sourcePlatform, onPersonaCli
             borderRadius: '50%',
             objectFit: 'cover',
             border: '1px solid var(--border-color)',
+            flexShrink: 0,
           }}
         />
 
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {persona.name}
             </span>
           </div>
 
-          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', gap: '6px' }}>
-            <span>{persona.handle}</span>
+          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{persona.handle}</span>
             <span>·</span>
-            <span>{createdAt}</span>
+            <span style={{ flexShrink: 0 }}>{createdAt}</span>
           </div>
         </div>
       </div>
@@ -67,10 +69,12 @@ export function PersonaHeader({ persona, createdAt, sourcePlatform, onPersonaCli
         style={{
           fontSize: '11px',
           padding: '3px 8px',
-          borderRadius: '10px',
+          borderRadius: 'var(--border-radius-xs)',
           backgroundColor: 'var(--bg-tertiary)',
           color: 'var(--text-secondary)',
           fontWeight: 500,
+          flexShrink: 0,
+          whiteSpace: 'nowrap',
         }}
       >
         {getPlatformTag(sourcePlatform)}

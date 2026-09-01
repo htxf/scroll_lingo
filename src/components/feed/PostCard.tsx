@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Post, Token, UserKnowledgeState } from '../../types';
+import { Post, Token, Persona, UserKnowledgeState } from '../../types';
 import { PersonaHeader } from './PersonaHeader';
 import { ActionButtons } from './ActionButtons';
 import { RubyTokenText } from '../reader/RubyTokenText';
@@ -13,6 +13,7 @@ interface PostCardProps {
   isPlayingAudio?: boolean;
   onBookmarkPost?: (post: Post) => void;
   selectedTokenId?: string | null;
+  onPersonaClick?: (persona: Persona) => void;
 }
 
 export function PostCard({
@@ -24,6 +25,7 @@ export function PostCard({
   isPlayingAudio = false,
   onBookmarkPost,
   selectedTokenId,
+  onPersonaClick,
 }: PostCardProps) {
   // Default to pure native Twitter mode (clean, no clutter)
   const [isStudyMode, setIsStudyMode] = useState(false);
@@ -42,10 +44,10 @@ export function PostCard({
         background: 'var(--bg-secondary)',
         border: '1px solid var(--border-color)',
         borderRadius: 'var(--border-radius-md)',
-        padding: '16px',
+        padding: 'var(--space-4)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
+        gap: 'var(--space-3)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >
@@ -55,7 +57,29 @@ export function PostCard({
         createdAt={post.createdAt}
         level={post.level}
         sourcePlatform={post.sourceContext?.sourcePlatform}
+        onPersonaClick={onPersonaClick}
       />
+
+      {/* Subtle Hot Topic Context Anchor (Gives N0 beginners immediate real-world meaning) */}
+      {post.sourceContext && (
+        <div
+          style={{
+            fontSize: '11px',
+            color: 'var(--text-muted)',
+            backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            padding: '4px 8px',
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>热点:</span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{post.sourceContext.originTitle}</span>
+        </div>
+      )}
 
       {/* Media Block: Image */}
       {post.imageUrl && (
@@ -72,13 +96,13 @@ export function PostCard({
         />
       )}
 
-      {/* Primary Japanese Content: Native Plain Text by default vs Inline Study Mode */}
+      {/* Primary Japanese Content */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          gap: '12px',
+          gap: 'var(--space-3)',
           padding: '2px 0',
         }}
       >
@@ -96,7 +120,7 @@ export function PostCard({
           )}
         </div>
 
-        {/* Speaker Play/Pause Button (🔊 when stopped, ⏸ when playing) */}
+        {/* Speaker Play/Pause Button */}
         <button
           onClick={handleAudioToggle}
           style={{
@@ -120,24 +144,23 @@ export function PostCard({
         </button>
       </div>
 
-      {/* Chinese Translation (Only visible in study mode) */}
+      {/* Clean Chinese Translation without harsh colored left border */}
       {isStudyMode && (
         <div
           style={{
             fontSize: '13px',
             color: 'var(--text-secondary)',
             lineHeight: '1.5',
-            padding: '6px 10px',
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '6px',
-            borderLeft: '2px solid var(--accent-primary)',
+            padding: '8px 12px',
+            backgroundColor: 'var(--bg-tertiary)',
+            borderRadius: '8px',
           }}
         >
           {post.translationZh}
         </div>
       )}
 
-      {/* Footer Actions: Single Bookmark Button on Left, Mode Switch on Right */}
+      {/* Footer Actions */}
       <ActionButtons
         isStudyMode={isStudyMode}
         onToggleStudyMode={() => setIsStudyMode((prev) => !prev)}
